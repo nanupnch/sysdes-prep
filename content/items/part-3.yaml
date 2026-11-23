@@ -1,0 +1,353 @@
+# Part 3 questions. Ids: <module>-p<n> predict first, -c<n> check, -k<n> crux guess.
+# Each check ends with one question from an earlier module (spaced: true).
+part: "3"
+items:
+  # ===================== 3.1 Consistency and coordination =====================
+  - id: "3.1-p1"
+    type: "predict"
+    prompt: "A leader holds a 10-second lease. It freezes for 15 seconds in a long garbage-collection pause, and a new leader is elected meanwhile. Then the old one wakes up. What goes wrong, and what could stop it?"
+    answer: "The old leader doesn't know it was replaced, so it carries on writing: two leaders, and conflicting writes. Checking the lease can't help, because the pause can come right after the check. A fencing token does: each new lease carries a higher number, and storage rejects any write with a lower token than one it has already seen."
+
+  - id: "3.1-c1"
+    type: "explain"
+    objective: 5
+    prompt: "Two on-call doctors each check that the other is still on call, then each signs off, in the same instant. The database uses snapshot isolation, and both transactions commit. Why, and what would have prevented it?"
+    idea_units:
+      - "Each transaction read a snapshot in which the other doctor was still on call"
+      - "Each wrote a different row, so the database saw no write conflict: write skew"
+      - "Serializable isolation would abort one of them, to be retried"
+      - "Or lock the rows you read (SELECT … FOR UPDATE), so the second transaction waits and sees the first's change"
+    misconception: "That ACID transactions rule this out. Isolation comes in levels, and most databases default to one that allows write skew."
+    review: "3.1#isolation"
+
+  - id: "3.1-c2"
+    type: "explain"
+    objective: 5
+    prompt: "After a network glitch, two nodes both believe they are the leader. What stops them corrupting your data?"
+    idea_units:
+      - "Election through consensus needs a majority, so at most one leader is elected per term"
+      - "Leadership is a lease that expires, so a cut-off leader should stop when it runs out"
+      - "Fencing tokens: storage rejects any write carrying a lower token than one it has already seen"
+    misconception: "That a heartbeat timeout is enough. A paused leader can wake and keep writing after it has been replaced."
+    review: "3.1#consensus"
+
+  - id: "3.1-c3"
+    type: "decide"
+    objective: 5
+    prompt: "Placing an order must reserve stock, charge a payment and book shipping, in three services with their own databases. Two-phase commit or a saga? And how does each service publish its events reliably?"
+    idea_units:
+      - "A saga: local transactions in sequence, each with a compensating action (release the stock, refund the payment) if a later step fails"
+      - "Two-phase commit blocks while its coordinator is down, and ties every service's availability together"
+      - "The outbox: write each event to an outbox table in the same local transaction as the change, and let a relay publish it"
+      - "Every step and every compensation is idempotent, because each may be retried"
+    misconception: "That a distributed transaction gives consistency for free. It costs availability and couples the services."
+    review: "3.1#sagas-outbox"
+
+  - id: "3.1-c4"
+    type: "explain"
+    objective: 6
+    spaced: true
+    prompt: "From 2.4: why retry with exponential backoff and jitter, what is a retry budget, and which calls should you never retry blindly?"
+    idea_units:
+      - "Backoff spreads retries out instead of hammering a struggling service"
+      - "Jitter randomises the timing, so clients don't retry in synchronised waves"
+      - "A retry budget caps retries, for example at 10% of requests, so they can't multiply the load during an outage"
+      - "Retry only idempotent operations, or ones that carry an idempotency key"
+    misconception: "That more retries mean more reliability. During an outage, every retry is extra load on the thing that's failing."
+    review: "2.4#timeouts-retries"
+
+  # ===================== 3.2 Changing and extending live systems =====================
+  - id: "3.2-p1"
+    type: "predict"
+    prompt: "You must rename a database column that live code reads and writes, without downtime. Guess: why can't you simply rename it in one deploy?"
+    answer: "During any deploy, old and new code run side by side, so one of them would break. Expand–contract splits the change into steps that each work with both: add the new column and write both, backfill old rows, switch reads, stop writing the old column, and only then drop it."
+
+  - id: "3.2-c1"
+    type: "explain"
+    objective: 7
+    prompt: "List the steps for renaming a column that live code uses, without downtime, and say how you'd run the step that rewrites existing rows."
+    idea_units:
+      - "Expand: add the new column, and deploy code that writes both"
+      - "Backfill old rows in small, throttled, resumable batches, watching replication lag and p99"
+      - "Switch reads to the new column once the copy is verified"
+      - "Contract: stop writing the old column, and drop it last; every step before the drop can be rolled back"
+    misconception: "That a migration is one deploy. Old and new code overlap during every release, so each step must work with both."
+    review: "3.2#expand-contract"
+
+  - id: "3.2-c2"
+    type: "decide"
+    objective: 7
+    prompt: "Orders live in a relational database, and product search needs a search index of them. The team proposes writing to both from the app. What goes wrong, and what do you do instead?"
+    idea_units:
+      - "Two writes to two systems aren't atomic: a crash or a hidden timeout between them leaves the stores different"
+      - "Concurrent requests can land in different orders in each store, so the copies drift for good"
+      - "Instead, change data capture: read the database's change log and apply each change, in commit order, to the index"
+      - "The index lags by seconds; business events go through an outbox"
+    misconception: "That retries make dual writes safe. Retries can't repair a difference nobody noticed."
+    review: "3.2#dual-writes-cdc"
+    also: ["3.1#sagas-outbox"]
+
+  - id: "3.2-c3"
+    type: "explain"
+    objective: 6
+    spaced: true
+    prompt: "From 2.2: a celebrity's profile key gets 50,000 reads a second, and it lives on one cache node. What breaks, and how do you serve it?"
+    idea_units:
+      - "One cache node can't serve that rate; adding nodes doesn't help, because one key lives on one node"
+      - "Copy the hot key into each app server's own memory for a few seconds"
+      - "Coalesce misses and jitter its TTL, so its expiry can't stampede the database"
+      - "Or split it into several keys, such as key#0 to key#9, and read any one"
+    misconception: "That a bigger cache cluster fixes a hot key. The load still lands on whichever node holds that key."
+    review: "2.2#stampedes"
+    also: ["2.3#hot-keys-ids"]
+
+  # ===================== 3.3 LLM serving and retrieval internals =====================
+  - id: "3.3-p1"
+    type: "predict"
+    prompt: "You self-host an 8B model on 80 GB GPUs. As traffic grows, which runs out first: GPU compute, or GPU memory? Guess, and say why."
+    answer: "Usually memory. The weights take about 16 GB, and every request in flight holds its own KV cache, which grows with its context. So concurrency, not request rate, sizes the GPUs, and paging the KV cache, quantizing and capping the context are the big levers."
+
+  - id: "3.3-c1"
+    type: "estimate"
+    objective: 3
+    prompt: "You need 200 requests in flight on an 8B model at 16-bit, each holding about 2 GB of KV cache, on 80 GB GPUs. How many GPUs, before overheads?"
+    idea_units:
+      - "Weights: about 16 GB, on every GPU"
+      - "KV cache: 200 × 2 GB = 400 GB in total"
+      - "Each GPU has 80 − 16 = 64 GB free, enough for 32 requests, so about 7 GPUs"
+      - "Then add headroom and redundancy: plan for 8 or 9"
+    misconception: "That the GPU count follows from the model's size alone. Concurrency and context length usually decide it."
+    review: "3.3#gpu-capacity"
+
+  - id: "3.3-c2"
+    type: "explain"
+    objective: 8
+    prompt: "Why does throughput per GPU rise as batches grow, why can bigger batches still hurt users, and what should you tune for instead?"
+    idea_units:
+      - "Each decode step reads all the weights; a batch shares that read among many requests, so tokens per second rise"
+      - "But each request waits longer in a bigger batch: queueing, root fact 5"
+      - "Tune for goodput, the requests that meet their latency target, not raw throughput"
+      - "Continuous batching lets new requests join at every step; keep interactive and batch traffic in separate pools"
+    misconception: "That the highest throughput is the best setting. Past a point, cheaper tokens mean slower answers for everyone."
+    review: "3.3#serving-internals"
+
+  - id: "3.3-c3"
+    type: "explain"
+    objective: 8
+    spaced: true
+    prompt: "From 2.6: why report pass^k rather than a single pass, and what is pass^4 when each run succeeds 90% of the time?"
+    idea_units:
+      - "One success proves little: answers vary from run to run"
+      - "pass^k asks whether all k runs succeed, which is what users experience over repeated use"
+      - "At 90% per run, pass^4 ≈ 66% and pass^8 ≈ 43%"
+      - "Raise it with fewer steps, steps that check their own output, and checkpoints"
+    misconception: "That a feature that passed once will pass again. Consistency has to be measured over repeated runs."
+    review: "2.6#compounding"
+
+  # ===================== 3.4 Agents, quality and operations at depth =====================
+  - id: "3.4-p1"
+    type: "predict"
+    prompt: "A research task must read and compare 40 sources. One agent, or a lead agent with sub-agents? Guess the trade-off."
+    answer: "Sub-agents with clean contexts can read in parallel while the lead merges their findings, which suits broad work that splits cleanly. The cost is many times the tokens, information lost at every hand-off, and runs that are harder to debug. For tightly coupled work, such as editing one codebase, one agent is better."
+
+  - id: "3.4-c1"
+    type: "explain"
+    objective: 8
+    prompt: "A new prompt beats the old one 62% to 58% on 100 cases, judged by a model that always saw the new answer first. Give three reasons not to trust that result, and how you'd run it properly."
+    idea_units:
+      - "At 100 cases the uncertainty is about ±8 points, so a 4-point gap is within the noise"
+      - "Position bias: judges favour the answer shown first, so swap the order and average"
+      - "The judge hasn't been calibrated against human labels on this task"
+      - "Run it pairwise on more cases, report per slice, and check that no must-pass case regressed"
+    misconception: "That a judge's verdict is objective. Judges have measurable biases, and small samples swing by chance."
+    review: "3.4#eval-statistics"
+
+  - id: "3.4-c2"
+    type: "decide"
+    objective: 8
+    prompt: "Your provider will retire the model you use in 90 days. Plan the upgrade."
+    idea_units:
+      - "Pinned versions mean nothing changes until you choose to switch"
+      - "Run the regression evals on the candidate model, comparing slices, not just the overall score"
+      - "Retune the prompts that regress"
+      - "Canary a share of traffic through the gateway, with rollback, then watch live signals for drift"
+    misconception: "That a model with a higher overall score is a safe swap. An average can hide a regression in one slice."
+    review: "3.4#model-lifecycle"
+
+  - id: "3.4-c3"
+    type: "explain"
+    objective: 5
+    spaced: true
+    prompt: "From 3.1: an order spans stock, payment and shipping services. Shipping fails after the payment succeeded. What does a saga do, and what must every step be?"
+    idea_units:
+      - "It runs compensating actions in reverse: refund the payment, then release the stock"
+      - "Every step and compensation must be idempotent, because each may be retried"
+      - "In-between states are visible, such as “paid, not shipped”, so the product must show them sensibly"
+      - "Each service publishes its events through an outbox, so no event is lost"
+    misconception: "That a failed step rolls everything back automatically. A saga undoes earlier steps only through compensations you write."
+    review: "3.1#sagas-outbox"
+
+  # ===================== 3.5 Pattern cards: twelve designs (crux guesses, unscored) =====================
+  - id: "3.5-k1"
+    type: "crux"
+    prompt: "Design a chat service. What is the crux?"
+    answer: "Delivering messages in order and in real time to users who may be offline, across millions of long-lived connections."
+    review: "3.5#chat"
+
+  - id: "3.5-k2"
+    type: "crux"
+    prompt: "Design ride-hailing, or a “near me” search. What is the crux?"
+    answer: "Finding nearby drivers fast while every driver's location changes every few seconds: a high write rate meeting a geospatial query."
+    review: "3.5#proximity"
+
+  - id: "3.5-k3"
+    type: "crux"
+    prompt: "Design video upload and streaming. What is the crux?"
+    answer: "Ingesting huge files and playing them smoothly worldwide: asynchronous transcoding into several bitrates, then delivery through a CDN."
+    review: "3.5#video"
+
+  - id: "3.5-k4"
+    type: "crux"
+    prompt: "Design file storage and sync. What is the crux?"
+    answer: "Syncing large files across devices cheaply, by uploading only the chunks that changed, while keeping the metadata consistent and resolving conflicts."
+    review: "3.5#file-sync"
+
+  - id: "3.5-k5"
+    type: "crux"
+    prompt: "Design a web crawler. What is the crux?"
+    answer: "Crawling billions of pages politely and without repeats: a prioritised frontier, per-host rate limits, and de-duplication with Bloom filters and content hashes."
+    review: "3.5#crawler"
+
+  - id: "3.5-k6"
+    type: "crux"
+    prompt: "Design ticketing for a flash sale. What is the crux?"
+    answer: "Thousands of people grab the same seats at the same moment: prevent double-booking with atomic, expiring holds, and absorb the spike with a waiting room."
+    review: "3.5#ticketing"
+
+  - id: "3.5-k7"
+    type: "crux"
+    prompt: "Design a self-hosted LLM inference API. What is the crux?"
+    answer: "Serving many users per GPU without blowing the latency budget: continuous batching, KV-cache memory, and autoscaling on queue depth."
+    review: "3.5#inference-api"
+
+  - id: "3.5-k8"
+    type: "crux"
+    prompt: "Design an enterprise AI gateway. What is the crux?"
+    answer: "One control point for every team's model traffic, with quotas, routing, fallback and logging, that doesn't become a single point of failure or a latency tax."
+    review: "3.5#ai-gateway"
+
+  - id: "3.5-k9"
+    type: "crux"
+    prompt: "Design a coding-agent platform. What is the crux?"
+    answer: "Letting an agent change code safely: sandboxed execution, scoped credentials, tests as the quality bar, and human review that caps throughput."
+    review: "3.5#coding-agent"
+
+  - id: "3.5-k10"
+    type: "crux"
+    prompt: "Design an eval and release pipeline for LLM features. What is the crux?"
+    answer: "Proving that every prompt or model change is not worse: versioned test sets, graders you trust, gates with enough statistical power, and fast feedback."
+    review: "3.5#eval-pipeline"
+
+  - id: "3.5-k11"
+    type: "crux"
+    prompt: "Design a text-to-SQL analytics assistant. What is the crux?"
+    answer: "Correct SQL on a messy real schema under row-level permissions: retrieve the relevant schema, run queries read-only, and check results rather than SQL text."
+    review: "3.5#text-to-sql"
+
+  - id: "3.5-k12"
+    type: "crux"
+    prompt: "Design semantic search and Q&A over 100 million documents. What is the crux?"
+    answer: "Keeping a 100-million-document index fresh and permission-aware at sane cost: embedding throughput, index size, filtering and hybrid ranking."
+    review: "3.5#semantic-search"
+
+  # ===================== 3.7 The finish: the final check and the interview-day warm-up =====================
+  - id: "3.7-c1"
+    type: "explain"
+    objective: 5
+    spaced: true
+    prompt: "Without notes, derive from the root facts why a global service needs both a CDN and data in several regions, and what that costs."
+    idea_units:
+      - "Root fact 2: a round trip between continents takes 100–150 ms, so distant users wait"
+      - "A CDN puts cacheable content near users; regional copies of the data cut the wait for dynamic reads"
+      - "Root fact 4: keeping regions consistent costs round trips, so choose per kind of data: strong for balances, eventual for feeds"
+      - "Active–passive is simpler but a failover loses the replication lag; active–active brings write conflicts"
+    misconception: "That one fast data centre is enough. The speed of light sets a floor on global latency."
+    review: "2.4#multi-region"
+    also: ["1.4#latency", "1.4#consistency", "2.2#cap-pacelc"]
+
+  - id: "3.7-c2"
+    type: "decide"
+    objective: 5
+    spaced: true
+    prompt: "Autoscaling adds and removes servers every few minutes, and clients hold WebSocket connections for live updates. What must be true of the servers, and what happens to a removed server's connections?"
+    idea_units:
+      - "The servers must be stateless: sessions live in a shared store or a signed token, so any server can take any request"
+      - "Drain a server before removing it: stop new connections and let it finish its in-flight work"
+      - "Its clients reconnect elsewhere, with jitter, so they don't arrive in one wave"
+      - "A registry and pub/sub route each message to whichever server now holds the user"
+    misconception: "That sticky sessions work with autoscaling. Removing a server drops everything it alone remembered."
+    review: "1.6#servers"
+    also: ["2.4#realtime"]
+
+  - id: "3.7-c3"
+    type: "explain"
+    objective: 5
+    spaced: true
+    prompt: "Why does a coordination service such as etcd run on 3 or 5 nodes, rather than 2 or 4, and what does each decision cost?"
+    idea_units:
+      - "Consensus needs a majority: 3 nodes survive 1 failure, and 5 survive 2"
+      - "4 nodes also survive only 1, and 2 survive none, so even counts add cost without tolerance"
+      - "Each decision costs a round trip to a majority, so keep consensus for small, critical state: leaders, configuration, locks"
+    misconception: "That more nodes always mean more availability. Tolerance comes from the majority; an even node adds a node to wait for, not a failure you can survive."
+    review: "3.1#consensus"
+
+  - id: "3.7-c4"
+    type: "estimate"
+    objective: 3
+    spaced: true
+    prompt: "An assistant answers 50,000 questions a day, each with 4,000 input and 500 output tokens, at $3 and $15 per million. What's the daily cost, which side dominates, and how long does each answer take at 80 tokens a second?"
+    idea_units:
+      - "Input: 200 million tokens, $600 a day"
+      - "Output: 25 million tokens, $375 a day; about $975 in total, with input about 60%"
+      - "Each answer: 500 ÷ 80 ≈ 6 seconds of writing, plus the first token, so stream it"
+    misconception: "That output always dominates the bill. Output costs more per token, but long prompts can still outweigh it."
+    review: "1.7#tokens"
+    also: ["2.5#token-economics"]
+
+  - id: "3.7-c5"
+    type: "estimate"
+    objective: 3
+    spaced: true
+    prompt: "A self-hosted 8B model at 16-bit must hold 60 requests in flight, each with about 1 GB of KV cache, on 80 GB GPUs. How many GPUs, and what would let each one hold more?"
+    idea_units:
+      - "Weights take about 16 GB on each GPU, leaving 64 GB for KV caches"
+      - "60 requests need about 60 GB, so one GPU just fits; plan for two, for headroom and redundancy"
+      - "Hold more by quantizing to 8-bit, paging the KV cache, and capping the context length"
+    misconception: "That requests per second size the GPUs. Requests in flight and their context length do."
+    review: "3.3#gpu-capacity"
+
+  - id: "3.7-c6"
+    type: "decide"
+    objective: 5
+    spaced: true
+    prompt: "A 10-node cache must grow to 12 nodes during a sale without a storm of misses, and one product key gets 30 times the traffic of any other. What do you use, and what does it not fix?"
+    idea_units:
+      - "Not hash mod N: changing N moves most keys, and the cache misses en masse"
+      - "Consistent hashing with virtual nodes: the 2 new nodes take only their slices, about a sixth of the keys"
+      - "It doesn't fix the hot key, which still lives on one node: copy it into each app server's memory, or split it"
+    misconception: "That consistent hashing spreads hot keys. It limits how many keys move; one key still lives on one node."
+    review: "2.3#consistent-hashing"
+    also: ["2.3#partitioning-schemes", "2.3#hot-keys-ids"]
+
+  - id: "3.7-d1"
+    type: "draw"
+    objective: 1
+    prompt: "Warm-up, 3 minutes: write a one-line RESHAPE outline for “Design a live leaderboard for a mobile game with 10 million daily players”. One line per step; no diagram."
+    idea_units:
+      - "Requirements and estimate: the top 100 and each player's own rank within seconds; about 1,000 score updates a second, read far more often"
+      - "Surface and design: submit-score and get-leaderboard calls; scores in an in-memory sorted structure, kept durably in a database"
+      - "Analyse: ranking millions quickly; an exact rank for the top, approximate score buckets for everyone else"
+      - "Pressure-test and evaluate: cheating and hot leaderboards; trade exact low ranks for speed; an SLO on read latency"
+    misconception: "That a warm-up should be a full mock. A few minutes on the skeleton primes the procedure without tiring you."
+    review: "1.2#reshape"
+    also: ["2.1#senior-signals"]

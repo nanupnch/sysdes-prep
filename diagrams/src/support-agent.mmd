@@ -1,0 +1,31 @@
+%% alt: The support assistant. A customer's message reaches the chat API, which knows the customer from their login session. A small model classifies the intent. Anything unclear or outside the assistant's scope goes to a human agent with a summary. Order, policy and refund requests go to the assistant model, which can call three tools: get_order, limited to this customer's orders; search_policy; and issue_refund, which asks the policy engine before paying. The engine pays refunds of up to 50 dollars that are within policy, and sends larger ones to a human approval queue.
+%% caption: The model chooses what to ask for; code decides what's allowed. Money moves only through the policy engine.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef tool fill:#dcfce7,stroke:#15803d,color:#052e16
+  classDef human fill:#f3f4f6,stroke:#4b5563,color:#111827
+  classDef untrusted fill:#fff1f2,stroke:#dc2626,stroke-dasharray:6 4,color:#450a0a
+
+  customer(["Customer message"]):::untrusted
+  api["Chat API<br/>identity from the login"]
+  router["Intent classifier<br/>small model"]:::model
+  assistant["Assistant model"]:::model
+  orders["get_order<br/>this customer only"]:::tool
+  policy["search_policy"]:::tool
+  refund["issue_refund"]:::tool
+  engine{{"Policy engine"}}:::control
+  pay[("Payments")]:::data
+  approve["Approval queue<br/>refunds over $50"]:::human
+  human["Human agent<br/>with a summary"]:::human
+
+  customer --> api --> router
+  router -- "order, policy, refund" --> assistant
+  router -- "other, or unsure" --> human
+  assistant --> orders
+  assistant --> policy
+  assistant --> refund
+  refund --> engine
+  engine -- "up to $50, in policy" --> pay
+  engine -- "over $50" --> approve

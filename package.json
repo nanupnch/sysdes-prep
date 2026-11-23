@@ -1,0 +1,19 @@
+{
+  "name": "sysdes-prep",
+  "private": true,
+  "description": "System design interview guide: a 6-hour, three-Part, mobile-first study site built from Markdown and YAML.",
+  "license": "CC-BY-4.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "diagrams": "node scripts/diagrams.mjs",
+    "check:content": "LC_ALL=en_US.UTF-8 ruby -Eutf-8:utf-8 scripts/validate-content.rb",
+    "check:print": "node scripts/print-check.mjs",
+    "preview": "python3 -m http.server 8642 --directory _site"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^12.2.0",
+    "js-yaml": "^5.5.0",
+    "markdown-it": "^15.0.3"
+  }
+}

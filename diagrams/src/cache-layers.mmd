@@ -1,0 +1,21 @@
+%% alt: A request's journey with a cache at each hop: the browser's own cache, a CDN edge near the user, an application cache beside the stateless app servers, and the database's buffer cache.
+%% caption: Each layer is faster to reach than the one behind it, and harder to correct when the data changes.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef cache fill:#fffbeb,stroke:#b45309,stroke-dasharray:6 4,color:#3b2405
+
+  user(["Browser or app"])
+  bc["Browser cache"]:::cache
+  cdn["CDN edge, near the user"]:::cache
+  lb{{"Load balancer"}}:::control
+  app["Stateless app servers"]
+  ac["Application cache<br/>(in-memory store)"]:::cache
+  db[("Database<br/>with its buffer cache")]:::data
+
+  user -.- bc
+  user -- "1 · miss in the browser" --> cdn
+  cdn -- "2 · miss at the edge" --> lb
+  lb --> app
+  app -- "3 · check the cache" --> ac
+  app -- "4 · only on a miss" --> db

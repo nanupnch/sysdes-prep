@@ -1,0 +1,19 @@
+%% alt: A request's journey in six numbered steps. 1, the browser asks DNS for the site's address. 2, it opens a TCP connection and sets up TLS encryption with the load balancer. 3, it sends the HTTP request. 4, the load balancer forwards it to one of several app servers. 5, the app server checks a cache. 6, only on a miss, it reads the database. The response returns the same way.
+%% caption: Every arrow is a network hop. Each one costs time and can fail, and the rest of the guide is about making hops cheaper or safer.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef cache fill:#fffbeb,stroke:#b45309,stroke-dasharray:6 4,color:#3b2405
+
+  user(["Browser or app"])
+  dns["DNS<br/>name → IP address"]
+  lb{{"Load balancer"}}:::control
+  app["App servers"]
+  cache["Cache"]:::cache
+  db[("Database")]:::data
+
+  user -- "1 · look up the address" --> dns
+  user -- "2 · TCP + TLS handshake<br/>3 · HTTP request" --> lb
+  lb -- "4 · forward to one server" --> app
+  app -- "5 · check first" --> cache
+  app -- "6 · only on a miss" --> db

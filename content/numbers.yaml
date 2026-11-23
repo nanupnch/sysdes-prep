@@ -1,0 +1,88 @@
+# Every figure the guide uses, once. The teaching text ({{num id}}), Appendix C and the summary page read from here.
+# tier: "memorise" = on the summary page; "reference" = Appendix C only.
+# as_of: a date for figures that change; "stable" for physics and arithmetic.
+# source: where it comes from. "derived" means our own arithmetic, shown in `working`.
+
+numbers:
+  # ===================== Memorise (summary page) =====================
+  - { id: "day_seconds", tier: "memorise", label: "Seconds in a day", value: "86,400 ≈ 10⁵", as_of: "stable", source: "arithmetic" }
+  - { id: "million_per_day", tier: "memorise", label: "1 million requests a day, per second", value: "≈ 12 per second (11.6)", as_of: "stable", source: "derived", working: "10⁶ ÷ 86,400" }
+  - { id: "peak_factor", tier: "memorise", label: "Peak load vs average", value: "≈ 2–3×", as_of: "stable", source: "rule of thumb; state it as an assumption" }
+  - { id: "powers_of_two", tier: "memorise", label: "Powers of two", value: "2¹⁰ ≈ 10³: KB → MB → GB → TB → PB", as_of: "stable", source: "classic primer, appendix" }
+  - { id: "tb_per_day", tier: "memorise", label: "1 TB a day as a rate", value: "≈ 12 MB/s", as_of: "stable", source: "derived", working: "10¹² B ÷ 86,400 s" }
+  - { id: "memory_read", tier: "memorise", label: "Read from main memory", value: "≈ 100 ns", as_of: "stable", source: "classic primer, latency numbers" }
+  - { id: "ssd_random_read", tier: "memorise", label: "Random read from an SSD", value: "≈ 100 µs", as_of: "stable", source: "classic primer, latency numbers", working: "16–150 µs, depending on the drive" }
+  - { id: "dc_round_trip", tier: "memorise", label: "Round trip inside a data centre", value: "≈ 0.5 ms", as_of: "stable", source: "classic primer, latency numbers" }
+  - { id: "continent_round_trip", tier: "memorise", label: "Round trip between continents", value: "≈ 100–150 ms", as_of: "stable", source: "classic primer, latency numbers; bounded by the speed of light in fibre" }
+  - { id: "three_nines", tier: "memorise", label: "99.9% availability", value: "≈ 8.8 h down a year (≈ 43 min a month)", as_of: "stable", source: "derived", working: "0.001 × 8,760 h" }
+  - { id: "four_nines", tier: "memorise", label: "99.99% availability", value: "≈ 53 min down a year (≈ 4.3 min a month)", as_of: "stable", source: "derived", working: "0.0001 × 525,600 min" }
+  - { id: "series_parallel", tier: "memorise", label: "Availability of combined parts", value: "In series: multiply. In parallel: 1 − (1 − a)ⁿ", as_of: "stable", source: "classic primer; probability, assuming independent failures" }
+  - { id: "littles_law", tier: "memorise", label: "Little's law", value: "Items in system = arrival rate × time in system (L = λW)", as_of: "stable", source: "Little, 1961" }
+  - { id: "target_utilisation", tier: "memorise", label: "Safe server utilisation", value: "≈ 60–70% busy", as_of: "stable", source: "queueing theory; see queue_wait_50_85" }
+  - { id: "tokens_per_word", tier: "memorise", label: "Tokens in English text", value: "1 token ≈ 0.75 words ≈ 4 characters", as_of: "Nov 2026", source: "AI primer 5.1 (OpenAI)" }
+  - { id: "output_speed", tier: "memorise", label: "Hosted frontier model output speed", value: "≈ 60–110 tokens/s", as_of: "Nov 2026", source: "AI primer 5.1 (Artificial Analysis)" }
+  - { id: "agent_tokens", tier: "memorise", label: "Token use vs a chat interaction", value: "Agent ≈ 4×; multi-agent research ≈ 15×", as_of: "2025", source: "AI primer 1 (Anthropic, multi-agent research system)" }
+  - { id: "weight_bytes", tier: "memorise", label: "Memory for model weights", value: "≈ 2 bytes per parameter at 16-bit (1 at 8-bit, 0.5 at 4-bit)", as_of: "stable", source: "arithmetic" }
+  - { id: "eval_interval", tier: "memorise", label: "95% interval on an 80% pass rate", value: "±11 points at 50 cases; ±8 at 100; ±3.5 at 500", as_of: "stable", source: "derived", working: "1.96 × √(0.8 × 0.2 ÷ n)" }
+  - { id: "compounding", tier: "memorise", label: "Ten steps at 95% each", value: "≈ 60% end to end", as_of: "stable", source: "derived", working: "0.95¹⁰" }
+
+  # ===================== Reference (Appendix C) =====================
+  # --- Latency and storage ---
+  - { id: "l1_cache", tier: "reference", label: "L1 cache reference", value: "≈ 1 ns", as_of: "stable", source: "classic primer, latency numbers" }
+  - { id: "hdd_seek", tier: "reference", label: "Disk seek (spinning disk)", value: "≈ 10 ms", as_of: "stable", source: "classic primer, latency numbers" }
+  - { id: "network_1mb", tier: "reference", label: "Send 1 MB over a 1 Gbps link", value: "≈ 10 ms (8 ms)", as_of: "stable", source: "derived", working: "8 × 10⁶ bits ÷ 10⁹ bits/s" }
+  - { id: "five_nines", tier: "reference", label: "99.999% availability", value: "≈ 5 min down a year", as_of: "stable", source: "derived", working: "0.00001 × 525,600 min" }
+  - { id: "tail_fanout", tier: "reference", label: "Tail at scale", value: "If 1% of calls are slow, a request fanning out to 100 servers is slow ≈ 63% of the time", as_of: "stable", source: "Dean & Barroso, 2013", working: "1 − 0.99¹⁰⁰" }
+  - { id: "queue_wait_50_85", tier: "reference", label: "Queueing wait, 50% vs 85% busy", value: "Mean wait > 5× longer", as_of: "stable", source: "derived (M/M/1 queue); AI primer lab 2.7", working: "ρ ÷ (1 − ρ): 1.0 at 50%, 5.7 at 85%" }
+
+  # --- Classic design arithmetic ---
+  - { id: "base62_space", tier: "reference", label: "7-character base-62 codes", value: "≈ 3.5 × 10¹² codes; a 50% chance of a collision after ≈ 2.2 M random codes", as_of: "stable", source: "derived (birthday bound)", working: "62⁷; √(2 ln 2 × 62⁷)" }
+  - { id: "mod_n_remap", tier: "reference", label: "Keys moved when adding a node", value: "hash mod N → N + 1 moves ≈ N ÷ (N + 1) of keys (80% going 4 → 5); consistent hashing moves ≈ 1 ÷ (N + 1)", as_of: "stable", source: "derived" }
+  - { id: "error_budget_month", tier: "reference", label: "Error budget at a 99.9% monthly SLO", value: "≈ 43 minutes a month", as_of: "stable", source: "derived", working: "0.001 × 43,200 min" }
+  - { id: "outages_from_changes", tier: "reference", label: "Outages caused by changes to a live system", value: "≈ 70%", as_of: "2016", source: "Beyer et al., Site Reliability Engineering (Google, 2016), ch. 1" }
+  - { id: "bloom_bits", tier: "reference", label: "Bloom filter at a 1% false-positive rate", value: "≈ 10 bits per item (10 billion items ≈ 12 GB)", as_of: "stable", source: "derived", working: "−ln(0.01) ÷ (ln 2)² ≈ 9.6 bits; 10¹⁰ × 9.6 bits ÷ 8 ≈ 1.2 × 10¹⁰ bytes" }
+  - { id: "hll_size", tier: "reference", label: "HyperLogLog distinct count", value: "≈ 12 KB for ≈ 1% error (0.81% standard error)", as_of: "stable", source: "Flajolet et al., 2007; Redis implementation", working: "2¹⁴ registers × 6 bits; error ≈ 1.04 ÷ √(2¹⁴)" }
+  - { id: "tsdb_compression", tier: "reference", label: "Time-series compression", value: "≈ 1.4 bytes per sample, from 16 (≈ 12× smaller)", as_of: "2015", source: "Pelkonen et al., 2015 (Gorilla, Facebook)" }
+  - { id: "fallback_availability", tier: "reference", label: "Fallback across two independent 99.5% providers", value: "≈ 99.997%, capped by the gateway's own availability", as_of: "stable", source: "derived; AI primer 3.1", working: "1 − 0.005²" }
+
+  # --- Tokens and latency ---
+  - { id: "page_tokens", tier: "reference", label: "A page of text", value: "≈ 500 tokens (≈ 375 words)", as_of: "Nov 2026", source: "AI primer 5.1, derived" }
+  - { id: "language_tokens", tier: "reference", label: "Same text in another language", value: "≈ 1.6× the tokens (Italian), ≈ 3× (Arabic), up to 15× for some languages", as_of: "2023", source: "AI primer 0.1 (Petrov et al.)" }
+  - { id: "json_tokens", tier: "reference", label: "Same facts as JSON instead of prose", value: "≈ 1.5× the tokens", as_of: "Nov 2026", source: "AI primer lab 0.1, derived" }
+  - { id: "temperature_zero", tier: "reference", label: "1,000 identical requests at temperature 0", value: "80 different completions on standard serving", as_of: "2025", source: "AI primer 0.1 (Thinking Machines)" }
+  - { id: "halve_output", tier: "reference", label: "Effect of halving tokens on latency", value: "Halving output ≈ halves latency; halving input saves only a few percent", as_of: "Nov 2026", source: "AI primer 2.1 (OpenAI)" }
+  - { id: "reasoning_tokens", tier: "reference", label: "Reasoning tokens", value: "4,000 of them before a 300-token answer ≈ 14× the generation time, all billed as output", as_of: "Nov 2026", source: "AI primer 0.2, derived", working: "4,300 ÷ 300" }
+
+  # --- Cost ratios (prices change; ratios last longer) ---
+  - { id: "output_vs_input_price", tier: "reference", label: "Output vs input token price", value: "Output usually costs several times more per token", as_of: "Nov 2026", source: "AI primer 5.1 (provider price lists)" }
+  - { id: "prompt_cache_read", tier: "reference", label: "Prompt-cache read", value: "≈ 0.1× the input price (varies by provider and model)", as_of: "Nov 2026", source: "AI primer 3.13" }
+  - { id: "prompt_cache_write", tier: "reference", label: "Prompt-cache write", value: "1.25× (5-minute) or 2× (1-hour) on Anthropic; no write fee on Google's implicit caching", as_of: "Nov 2026", source: "AI primer 3.13" }
+  - { id: "batch_price", tier: "reference", label: "Batch processing", value: "≈ 0.5× the price, with results within hours", as_of: "Nov 2026", source: "AI primer 3.14" }
+  - { id: "rag_input_share", tier: "reference", label: "Retrieval-heavy request", value: "Input ≈ 80% of the bill", as_of: "Nov 2026", source: "AI primer 1, worked example (derived)" }
+  - { id: "illustrative_prices", tier: "reference", label: "Illustrative prices used in this guide's examples", value: "$3 per million input tokens, $15 per million output tokens", as_of: "Nov 2026", source: "AI primer 1; illustrative only, not a quote" }
+
+  # --- Serving and memory ---
+  - { id: "weights_8b", tier: "reference", label: "8B-parameter model at 16-bit", value: "≈ 16 GB of weights", as_of: "stable", source: "derived" }
+  - { id: "kv_formula", tier: "reference", label: "KV cache per token", value: "2 × layers × KV heads × head dimension × bytes per value", as_of: "stable", source: "AI primer 3.8 (arithmetic)" }
+  - { id: "kv_8b_128k", tier: "reference", label: "KV cache, 8B model, one 128k-token request", value: "69 GB (full attention) → 17 GB (grouped-query) → 8.6 GB (and 8-bit)", as_of: "Nov 2026", source: "AI primer lab 3.8, derived" }
+  - { id: "gpu_memory", tier: "reference", label: "Accelerator memory and bandwidth", value: "80 GB at 3.35 TB/s (H100 SXM); 141 GB at 4.8 TB/s (H200 SXM)", as_of: "2026", source: "AI primer 5.1 (NVIDIA)" }
+  - { id: "paged_kv", tier: "reference", label: "Wasted KV-cache memory", value: "60–80% before paging → under 4% with paging", as_of: "2023", source: "Kwon et al., 2023 (PagedAttention)" }
+  - { id: "speculative_speedup", tier: "reference", label: "Speculative decoding", value: "≈ 2–3× faster, with identical output", as_of: "2023", source: "Leviathan et al., 2023; Chen et al., 2023" }
+  - { id: "lora_size", tier: "reference", label: "Rank-16 LoRA adapter on an 8B model", value: "≈ 0.2% of the parameters, ≈ 34 MB", as_of: "Nov 2026", source: "AI primer lab 3.18, derived" }
+
+  # --- Retrieval ---
+  - { id: "stuffing_threshold", tier: "reference", label: "Corpus small enough to skip retrieval", value: "≈ 200k tokens (≈ 500 pages)", as_of: "2024", source: "AI primer 3.4 (Anthropic)" }
+  - { id: "contextual_retrieval", tier: "reference", label: "Contextual retrieval + keyword search + reranking", value: "top-20 retrieval failures cut by 67%", as_of: "2024", source: "AI primer 3.4 (Anthropic)" }
+  - { id: "rrf_constant", tier: "reference", label: "Reciprocal rank fusion constant", value: "k = 60", as_of: "2009", source: "Cormack, Clarke & Büttcher, 2009" }
+  - { id: "vector_quantization", tier: "reference", label: "8-bit vectors vs 32-bit floats", value: "≈ 4× smaller", as_of: "stable", source: "arithmetic; AI primer 3.6" }
+  - { id: "context_rot", tier: "reference", label: "Models that degrade as input grows", value: "18 of 18 tested", as_of: "2025", source: "AI primer 3.3 (Chroma)" }
+
+  # --- Evals, agents and operations ---
+  - { id: "judge_agreement", tier: "reference", label: "Strong LLM judges vs human raters", value: "> 80% agreement, about the rate at which humans agree with each other", as_of: "2023", source: "Zheng et al., 2023" }
+  - { id: "eval_detect_5pts", tier: "reference", label: "Cases to detect a drop from 80% to 75%", value: "≈ 1,000–2,000", as_of: "stable", source: "AI primer lab 3.15, derived" }
+  - { id: "pass_k", tier: "reference", label: "Consistency at 90% per run", value: "pass^4 ≈ 66%, pass^8 ≈ 43%", as_of: "stable", source: "derived", working: "0.9⁴, 0.9⁸" }
+  - { id: "agent_steps_97", tier: "reference", label: "Eight steps at 97% each", value: "≈ 78% end to end", as_of: "stable", source: "derived", working: "0.97⁸" }
+  - { id: "tool_tokens", tier: "reference", label: "Tool definitions in the prompt", value: "≈ 950 tokens per tool (58 tools ≈ 55k tokens)", as_of: "2025", source: "AI primer 3.10 (Anthropic)" }
+  - { id: "guardrail_base_rate", tier: "reference", label: "1% false alarms, 1 attack in 10,000 requests", value: "≈ 1% of flagged requests are real attacks", as_of: "stable", source: "derived (base rates)" }
+  - { id: "checkpoint_waste", tier: "reference", label: "12-step run with 5% failure per step", value: "wasted calls drop from 42% to 5% with checkpoints", as_of: "Nov 2026", source: "AI primer lab 3.14, derived" }
+  - { id: "tail_sampling", tier: "reference", label: "Tail sampling of traces", value: "Keeps 100% of errors at ≈ 2.5% of the traces", as_of: "Nov 2026", source: "AI primer lab 3.16, derived" }

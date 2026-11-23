@@ -1,0 +1,33 @@
+%% alt: Two ways to build a feed. Fan-out on write: when an author posts, a worker copies the post's ID into the feed list of each follower, so a reader later fetches one ready-made list. Fan-out on read: nothing is copied at posting time; when a reader opens the feed, the feed service fetches recent posts from every account they follow and merges them, newest first.
+%% caption: Fan-out on write pays once per follower when a post is made; fan-out on read pays once per followed account every time a feed loads.
+%%{init: {"flowchart": {"wrappingWidth": 200, "nodeSpacing": 14}}}%%
+flowchart LR
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef cache fill:#fffbeb,stroke:#b45309,stroke-dasharray:6 4,color:#3b2405
+
+  subgraph W ["Fan-out on write: work at posting time"]
+    direction TB
+    author(["An author posts"])
+    fw["Fan-out worker:<br/>one write per follower"]
+    f1["A follower's<br/>feed"]:::cache
+    f2["A follower's<br/>feed"]:::cache
+    r1(["A reader fetches<br/>one ready list"])
+    author --> fw
+    fw --> f1
+    fw --> f2
+    f2 --> r1
+  end
+  subgraph R ["Fan-out on read: work at reading time"]
+    direction TB
+    r2(["A reader opens the feed"])
+    fs["Feed service:<br/>one read per account"]
+    p1[("A followed<br/>account's posts")]:::data
+    p2[("A followed<br/>account's posts")]:::data
+    merge["Merge, newest first"]
+    r2 --> fs
+    fs --> p1
+    fs --> p2
+    p1 --> merge
+    p2 --> merge
+  end
+  W ~~~ R

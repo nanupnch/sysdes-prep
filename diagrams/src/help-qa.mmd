@@ -1,0 +1,20 @@
+%% alt: The help-centre Q&A design. Ahead of time, whenever a help article changes, it is split into passages, embedded and stored in a search index that finds passages by meaning and by keyword. For each customer question, the Q&A service first searches the index for the best five passages. If none is good enough, it offers a person instead of calling the model. Otherwise it makes one model call with the instructions, the passages, the recent conversation and the question, and streams the answer back with links to the articles it used. Every question, answer and rating is logged for the evals.
+%% caption: One model call with retrieval, the lowest rung that meets the bar. A search that finds nothing good skips the model and offers a person, which prevents most confident wrong answers.
+%%{init: {"flowchart": {"wrappingWidth": 220}}}%%
+flowchart TB
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+
+  subgraph ahead ["When an article changes"]
+    direction LR
+    articles[("Help articles")]:::data --> indexer["Split and embed"] --> index[("Search index")]:::data
+  end
+  ahead ~~~ q
+  q(["A customer's question"]) --> search["1 · Search: the best 5 passages"]
+  index -.-> search
+  search --> good{"Good enough?"}:::control
+  good -- "no" --> human(["Offer a person"])
+  good -- "yes" --> model["2 · One model call with the passages"]:::model
+  model --> answer(["3 · A streamed answer, with links"])
+  answer -.-> logs[("Logged for evals")]:::data

@@ -1,0 +1,25 @@
+%% alt: Clients look up the service's name in DNS, then send requests to a pair of load balancers. The load balancers health-check three identical stateless app servers and send each request to any healthy one; the third server has failed its check and gets no traffic. The servers keep sessions in a shared in-memory store and data in the database.
+%% caption: Any healthy server can take any request, because sessions live in a shared store. A server that fails its health check simply stops getting traffic.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef down fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:3 3,color:#52525b
+
+  client(["Clients"])
+  dns["DNS"]
+  lb{{"Load balancer pair"}}:::control
+  a1["App server 1"]
+  a2["App server 2"]
+  a3["App server 3<br/>failed health check"]:::down
+  sess[("Session store<br/>in memory")]:::data
+  db[("Database")]:::data
+
+  client -- "1 · look up the name" --> dns
+  client -- "2 · request" --> lb
+  lb -- "3 · any healthy server" --> a1
+  lb --> a2
+  lb -. "no traffic" .-> a3
+  a1 --> sess
+  a2 --> sess
+  a1 --> db
+  a2 --> db

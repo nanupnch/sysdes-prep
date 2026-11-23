@@ -1,0 +1,123 @@
+# Pretest on Start here (1.1): 15 multiple-choice questions, about 7 minutes. Guessing is encouraged.
+# 12 or more right suggests starting at Part 2. area groups the score: numbers, classic or llm.
+part: "1"
+items:
+  - id: "pre-01"
+    type: "choice"
+    area: numbers
+    prompt: "About how many requests per second is 1 million requests a day?"
+    choices: ["About 1", "About 12", "About 120", "About 1,200"]
+    answer: 1
+    why: "A day is 86,400 ≈ 10⁵ seconds, so 10⁶ ÷ 10⁵ ≈ 10 (exactly 11.6)."
+
+  - id: "pre-02"
+    type: "choice"
+    area: numbers
+    prompt: "Which of these is fastest?"
+    choices: ["A round trip between continents", "A random read from an SSD", "A read from main memory", "A round trip inside a data centre"]
+    answer: 2
+    why: "Memory ≈ 100 ns; SSD ≈ 100 µs; data-centre round trip ≈ 0.5 ms; between continents ≈ 100–150 ms."
+
+  - id: "pre-03"
+    type: "choice"
+    area: numbers
+    prompt: "A service is 99.9% available and needs two other services, each also 99.9%, to answer a request. Roughly how available is it overall?"
+    choices: ["99.0%", "99.7%", "99.9%", "99.99%"]
+    answer: 1
+    why: "Parts in series multiply: 0.999 × 0.999 × 0.999 ≈ 0.997."
+
+  - id: "pre-04"
+    type: "choice"
+    area: numbers
+    prompt: "A server is 85% busy instead of 50% busy. Its average queueing wait is…"
+    choices: ["About the same", "About 1.7× longer", "More than 5× longer", "Shorter, because the server is warmed up"]
+    answer: 2
+    why: "Waiting grows roughly as utilisation ÷ (1 − utilisation): 0.5 ÷ 0.5 = 1 versus 0.85 ÷ 0.15 ≈ 5.7."
+
+  - id: "pre-05"
+    type: "choice"
+    area: numbers
+    prompt: "A p99 latency of 800 ms means…"
+    choices: ["99% of requests finish within 800 ms", "The average request takes 800 ms", "1% of requests finish within 800 ms", "The server is up 99% of the time"]
+    answer: 0
+    why: "p99 is the 99th percentile: only 1 request in 100 is slower."
+
+  - id: "pre-06"
+    type: "choice"
+    area: classic
+    prompt: "Reads far outnumber writes and slightly stale data is fine. Which first step usually helps most?"
+    choices: ["Shard the database", "Switch to a graph database", "Put a message queue in front of the database", "Add a cache in front of the database"]
+    answer: 3
+    why: "A cache serves repeated reads from memory and takes load off the database; sharding is a last resort."
+
+  - id: "pre-07"
+    type: "choice"
+    area: classic
+    prompt: "Which statement about the CAP theorem is most accurate?"
+    choices: ["You can pick any two of consistency, availability and partition tolerance", "NoSQL databases are always available", "During a network partition, a system must choose between consistency and availability", "CAP applies only to SQL databases"]
+    answer: 2
+    why: "Partitions happen whether you like it or not; the real choice is what to give up while one lasts."
+
+  - id: "pre-08"
+    type: "choice"
+    area: classic
+    prompt: "A consumer may receive the same message twice. What makes that safe?"
+    choices: ["A bigger queue", "A faster consumer", "Exactly-once delivery from the queue", "Making the handler idempotent"]
+    answer: 3
+    why: "Redelivery can't be ruled out end to end, so handling a duplicate must have no extra effect."
+
+  - id: "pre-09"
+    type: "choice"
+    area: classic
+    prompt: "Why place keys on cache nodes with consistent hashing?"
+    choices: ["It encrypts the keys", "It keeps the keys sorted", "Adding a node moves only a small share of keys", "It guarantees there are no hot keys"]
+    answer: 2
+    why: "Only the keys in the new node's slice of the ring move; with hash mod N, most keys would."
+
+  - id: "pre-10"
+    type: "choice"
+    area: classic
+    prompt: "During an outage, clients that retry on a fixed schedule, without jitter, tend to…"
+    choices: ["Spread load evenly over time", "Reduce latency for every client", "Guarantee delivery", "Synchronise into waves that hit the recovering service"]
+    answer: 3
+    why: "Identical timers line up, so the retries arrive together and can knock the service over again."
+
+  - id: "pre-11"
+    type: "choice"
+    area: llm
+    prompt: "For a long LLM answer, what usually dominates the total wait?"
+    choices: ["Generating the output tokens one at a time", "Processing the prompt", "Network transfer", "Tokenising the text"]
+    answer: 0
+    why: "The prompt is processed in parallel; output is produced one token at a time, so long answers are slow."
+
+  - id: "pre-12"
+    type: "choice"
+    area: llm
+    prompt: "A model must answer from your company's documents, which change every day. What's the best first approach?"
+    choices: ["Fine-tune the model on the documents", "Raise the temperature", "Retrieve the relevant passages at question time (RAG)", "Use a bigger model without the documents"]
+    answer: 2
+    why: "Retrieval keeps answers current and citable; fine-tuning is poor at adding facts and goes stale."
+
+  - id: "pre-13"
+    type: "choice"
+    area: llm
+    prompt: "Which combination lets prompt injection steal data?"
+    choices: ["A large model, a long prompt and streaming", "Access to private data, exposure to untrusted content, and a way to send data out", "A temperature above 0, tools and caching", "Retrieval, fine-tuning and evals"]
+    answer: 1
+    why: "That's the lethal trifecta. Remove any one leg and the attack can't complete."
+
+  - id: "pre-14"
+    type: "choice"
+    area: llm
+    prompt: "An agent gets each step right 95% of the time. About how often does a 10-step task succeed end to end?"
+    choices: ["95%", "85%", "60%", "10%"]
+    answer: 2
+    why: "Success compounds: 0.95¹⁰ ≈ 0.60."
+
+  - id: "pre-15"
+    type: "choice"
+    area: llm
+    prompt: "On 50 test cases, a prompt change lifts the pass rate from 80% to 84%. What can you conclude?"
+    choices: ["The change is clearly better", "The difference is within noise at this sample size", "The change is clearly worse", "An LLM judge would make the result exact"]
+    answer: 1
+    why: "With 50 cases, the 95% interval around 80% is about ±11 points, so +4 could easily be chance."

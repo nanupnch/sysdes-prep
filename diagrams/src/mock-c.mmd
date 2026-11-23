@@ -1,0 +1,23 @@
+%% alt: The enterprise RAG assistant, top to bottom. Untrusted sources (the wiki, drives, policies and tickets) send change events, repaired by a nightly job, to indexing workers that parse, chunk and embed into vector and keyword indexes, each chunk carrying its allowed groups. The assistant API takes an employee's question, gets the asker's groups from the identity provider, runs a filtered hybrid search with reranking, and calls the model through the AI gateway. The model answers only from the passages and has no tools; a cited answer streams back to the employee.
+%% caption: Permissions travel with every chunk and are checked inside the search; change events keep the index fresh. The documents are untrusted, so the model gets no way to send data out.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef human fill:#f3f4f6,stroke:#4b5563,color:#111827
+  classDef untrusted fill:#fff1f2,stroke:#dc2626,stroke-dasharray:6 4,color:#3f0a0a
+
+  src["Wiki · drives · policies · tickets"]:::untrusted
+  ev[["Change events + nightly repair job"]]
+  iw["Indexing workers: parse · chunk · embed"]
+  idx[("Vector + keyword indexes<br/>each chunk with its allowed groups")]:::data
+  idp[("Identity provider<br/>user → groups")]:::data
+  api["Assistant API<br/>takes the employee's question"]
+  gw{{"AI gateway: quotas · fallback"}}:::control
+  llm(["LLM: answers only from<br/>the passages, no tools"]):::model
+  user(["Employee: a cited answer, streamed"]):::human
+
+  src --> ev --> iw --> idx
+  idx -- "filtered hybrid<br/>search, rerank" --> api
+  idp -- "groups" --> api
+  api --> gw --> llm --> user

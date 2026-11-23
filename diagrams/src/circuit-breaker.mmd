@@ -1,0 +1,12 @@
+%% alt: A state diagram with three states. Closed: calls pass through and failures are counted. When failures pass a threshold, it moves to open, where calls fail at once without reaching the dependency. When the cool-down ends, it moves to half-open, where a few trial calls pass. If they succeed it returns to closed; if one fails it returns to open.
+%% caption: While open, calls fail fast, so no threads wait on a dependency that is already failing; half-open tests recovery with a few calls.
+stateDiagram-v2
+  direction LR
+  Closed: Closed · calls pass, failures counted
+  Open: Open · calls fail at once
+  HalfOpen: Half-open · a few trial calls
+  [*] --> Closed
+  Closed --> Open: failures pass a threshold
+  Open --> HalfOpen: cool-down ends
+  HalfOpen --> Closed: trial calls succeed
+  HalfOpen --> Open: a trial call fails

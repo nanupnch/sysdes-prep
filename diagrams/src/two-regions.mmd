@@ -1,0 +1,20 @@
+%% alt: Two regions. Users reach a global DNS or load balancer, which sends all traffic to region A, the active region, with its load balancer, app servers and leader database. The leader replicates asynchronously, seconds behind, to a follower database in region B, the passive standby, whose app servers are scaled down. On failover, global routing sends users to region B and its follower is promoted.
+%% caption: Active–passive: one region takes all the writes, and the standby trails it by the replication lag, which is the data a failover loses.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef standby fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:3 3,color:#3f3f46
+
+  users(["Users"])
+  global{{"Global DNS or load balancer"}}:::control
+  appa["Region A · active<br/>load balancer + app servers"]
+  appb["Region B · passive standby<br/>load balancer + app servers,<br/>scaled down"]:::standby
+  dba[("Region A<br/>leader database")]:::data
+  dbb[("Region B<br/>follower database")]:::data
+
+  users --> global
+  global -- "all traffic" --> appa
+  global -. "on failover" .-> appb
+  appa --> dba
+  appb -.-> dbb
+  dba -. "async replication, seconds behind" .-> dbb

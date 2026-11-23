@@ -1,0 +1,22 @@
+%% alt: One model call. Your app builds a prompt from three parts: instructions, context such as retrieved passages or the conversation so far, and the user's question. All of it is input tokens. The model reads the whole prompt at once, then writes the answer one token at a time, and each token is streamed to the user as soon as it is written. You pay for input tokens and output tokens, and output tokens cost more.
+%% caption: A call is priced per token in and out, and the answer arrives one token at a time, so a long answer is a slow answer, and apps stream it.
+%%{init: {"flowchart": {"wrappingWidth": 300}}}%%
+flowchart TB
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+
+  app["Your app"]
+  subgraph prompt ["The prompt: input tokens, priced per token"]
+    direction TB
+    ins["Instructions"]:::data
+    ctx["Context: passages, the conversation so far"]:::data
+    q["The user's question"]:::data
+  end
+  model["The model reads the whole prompt at once"]:::model
+  out["The answer: output tokens, written one at a time and priced higher"]:::model
+  user(["User"])
+
+  app --> prompt
+  prompt --> model
+  model --> out
+  out -- "each token streamed as it's written" --> user

@@ -1,0 +1,26 @@
+%% alt: A notification service. Product services call an API that checks auth and idempotency, then append to separate transactional and campaign topics. A campaign expander pages segments into paced batches. An eligibility step checks preferences, quiet hours and unsubscribes at send time. Per-channel workers with rate limiters call push, email and SMS providers, and provider webhooks write delivery status.
+%% caption: Campaigns get their own topics and pacing, and preferences are checked at send time, so a campaign can't delay a password reset or ignore an unsubscribe.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef tool fill:#dcfce7,stroke:#15803d,color:#0b2e17
+
+  svc(["Product services"]) --> api{{"API: auth, validate, idempotency key"}}:::control
+  api --> tq[["Transactional topic"]]
+  api --> cq[["Campaign topic"]]
+  cq --> exp["Campaign expander: segment → paced batches"]
+  exp --> bq[["Campaign send topic"]]
+  tq --> elig{{"Eligibility at send time: preferences, quiet hours, unsubscribes"}}:::control
+  bq --> elig
+  prefs[("Preferences and device tokens, cached")]:::data -.-> elig
+  elig --> push["Push workers + rate limiter"]
+  elig --> email["Email workers + rate limiter"]
+  elig --> sms["SMS workers + rate limiter"]
+  dedup[("Dedup keys with TTL")]:::data -.-> push & email & sms
+  push --> pp(["Push providers"]):::tool
+  email --> ep(["Email providers"]):::tool
+  sms --> sp(["SMS providers A and B"]):::tool
+  pp & ep & sp -- "webhooks" --> status["Status ingest"]
+  status --> st[("Send records")]:::data
+  status --> an[["Analytics stream"]]
+  push & email & sms -- "after N failures" --> dlq[["Dead-letter queue"]]

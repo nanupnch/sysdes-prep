@@ -1,0 +1,14 @@
+%% alt: Version 1 of the URL shortener. Clients call a load balancer, which spreads requests across stateless app servers. The app servers create and look up links in one database.
+%% caption: One service and one database: correct and simple, but every click reaches the database.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+
+  client(["Clients: browsers and apps"])
+  lb{{"Load balancer"}}:::control
+  app["Stateless app servers<br/>create · redirect"]
+  db[("Database<br/>links table")]:::data
+
+  client -- "POST /links · GET /{code}" --> lb
+  lb --> app
+  app -- "insert · read by code" --> db

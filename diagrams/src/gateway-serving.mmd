@@ -1,0 +1,23 @@
+%% alt: Applications send every model call to an AI gateway, which checks identity and token quotas per team, routes each request to a model, falls back to another provider when one fails, and logs tokens and cost per team. Behind it, easy requests go to a hosted small model, hard ones to a hosted large model, failures to a second provider, and requests with private data to a self-hosted pool, where a serving engine with continuous batching and a paged KV cache runs the model on GPUs.
+%% caption: Applications see one endpoint. Quotas, routing, fallback and cost tracking live in one place, in front of every model.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+
+  apps(["Apps and teams"])
+  gw{{"AI gateway<br/>quotas · routing · fallback · logging"}}:::control
+  logs[("Tokens and cost<br/>per team")]:::data
+  small["Provider A<br/>small model"]:::model
+  large["Provider A<br/>large model"]:::model
+  backup["Provider B<br/>fallback model"]:::model
+  pool["Self-hosted serving engine<br/>continuous batching · paged KV cache"]:::model
+  gpus["GPU pool"]
+
+  apps --> gw
+  gw -.-> logs
+  gw -- "easy" --> small
+  gw -- "hard" --> large
+  gw -. "on failure" .-> backup
+  gw -- "private data" --> pool
+  pool --> gpus

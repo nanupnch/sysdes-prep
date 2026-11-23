@@ -1,0 +1,399 @@
+# Part 2 questions. Ids: <module>-p<n> predict first, -c<n> check, -d<n> drill, -f<n> faded step, -s<n> self-explanation.
+# Each check ends with one question from an earlier module (spaced: true).
+part: "2"
+items:
+  # ===================== 2.1 What seniors do differently =====================
+  - id: "2.1-p1"
+    type: "predict"
+    prompt: "Halfway through your design, the interviewer asks: “What if traffic grows 100 times?” Guess what they're usually signalling, and how a strong candidate responds."
+    answer: "Usually not that you're wrong: they want the next level of depth. Restate the new constraint, say which part breaks first at 100 times and why, with a number, then adapt that part rather than starting over."
+
+  - id: "2.1-c1"
+    type: "explain"
+    objective: 6
+    prompt: "What separates a senior answer from a mid-level one in the Analyse and Pressure-test steps?"
+    idea_units:
+      - "Picks the hardest problem without being asked"
+      - "Compares two options with numbers, then decides, and states the cost"
+      - "Raises failures, hot spots and abuse before the interviewer does"
+      - "Says how the system degrades when parts fail"
+    misconception: "That listing every option shows breadth. Listing without deciding reads as indecision."
+    review: "2.1#senior-signals"
+    also: ["2.1#driving"]
+
+  - id: "2.1-c2"
+    type: "recall"
+    objective: 5
+    spaced: true
+    prompt: "From 1.4: name the seven root facts, and one design pattern each one forces."
+    idea_units:
+      - "Machines are finite (scale up, then out); distance and storage media cost time (caches, CDNs, replicas)"
+      - "Parts fail and networks split (redundancy, timeouts, retries); agreement costs round trips (the consistency trade-off)"
+      - "Queues grow near full utilisation (headroom, async work, back-pressure)"
+      - "Models are probabilistic and priced per token (evals, budgets, streaming); inputs can be hostile (validation, breaking the lethal trifecta)"
+    misconception: "That design patterns are things to memorise. Each follows from a fact you can rebuild it from."
+    review: "1.4#root-facts"
+
+  # ===================== 2.2 Caching and data, in depth =====================
+  - id: "2.2-p1"
+    type: "predict"
+    prompt: "A user's details change. Should the app write the new value into the cache, or delete the cached copy? Guess which, and why."
+    answer: "Delete it. If two writers both update the cache, the older value can land last and stay until the TTL expires. Deleting makes the next read fetch the current value from the database, and the TTL caps the damage if a delete is ever lost."
+
+  - id: "2.2-c1"
+    type: "explain"
+    objective: 6
+    prompt: "A cache key read 20,000 times a second expires. What happens next, and what are three fixes?"
+    idea_units:
+      - "Every request that misses goes to the database at once: a cache stampede, which can overload it"
+      - "Coalesce the misses, so one request loads the value and the rest wait for it"
+      - "Jitter the TTLs, so popular keys don't expire together"
+      - "Serve the stale value while one request refreshes it, or keep very hot keys in each server's memory"
+    misconception: "That a bigger database is the fix. The spike lasts seconds and repeats at every expiry; removing the herd is cheaper."
+    review: "2.2#stampedes"
+
+  - id: "2.2-c2"
+    type: "decide"
+    objective: 5
+    prompt: "Reads outnumber writes 100 to 1, a minute of staleness is fine, and users are spread around the world. Cache, read replica or CDN, and why?"
+    idea_units:
+      - "A CDN for public, cacheable responses, close to users: root fact 2"
+      - "Cache-aside in front of the database for hot dynamic reads, with a TTL of about a minute"
+      - "Replicas add read capacity, but don't cut the delay between continents unless placed in each region"
+    misconception: "That read replicas fix global latency. Only copies near the user do."
+    review: "2.2#cache-patterns"
+
+  - id: "2.2-c3"
+    type: "decide"
+    objective: 5
+    prompt: "A chat app's main query is “the latest 50 messages in a conversation”. Choose the partition key and the sort key, and say what to avoid."
+    idea_units:
+      - "Partition by conversation ID, so one conversation's messages live together"
+      - "Sort by time, so the latest 50 are one range read"
+      - "Don't partition by time alone, or every new message lands on one hot partition"
+      - "Give a huge conversation a time bucket, such as the month, and serve other queries, like search, from a separate index"
+    misconception: "That you model the entities first and add queries later. In a NoSQL store, the queries decide the keys."
+    review: "2.2#data-modelling"
+
+  - id: "2.2-c4"
+    type: "explain"
+    objective: 5
+    spaced: true
+    prompt: "From 1.6: a user saves their profile, refreshes, and sees the old version. Explain why, and give two fixes."
+    idea_units:
+      - "The read went to a replica that hadn't yet applied the write: replication lag"
+      - "Nothing is lost; the write is on the leader, and the replica will catch up"
+      - "Read-your-writes: send that user's reads to the leader for a short window after they write"
+      - "Or show the user's own change straight away in the client"
+    misconception: "That the write failed. It succeeded on the leader; the replica is simply behind."
+    review: "1.6#databases"
+    also: ["2.2#replication"]
+
+  # ===================== 2.3 Async work and partitioning, in depth =====================
+  - id: "2.3-p1"
+    type: "predict"
+    prompt: "A worker takes a “charge this order” message, charges the card, then crashes before acknowledging the message. What happens next, and how would you stop the customer paying twice?"
+    answer: "The queue never got the acknowledgement, so it redelivers the message and another worker charges again: at-least-once delivery. The fix is an idempotent handler: record the order ID as an idempotency key in the same transaction as the effect, pass the same key to the payment provider, and skip any message whose key is already recorded."
+
+  - id: "2.3-c1"
+    type: "decide"
+    objective: 5
+    prompt: "Three needs: (a) resize uploaded images in the background, (b) tell five services that an order was placed, (c) let a new analytics service reprocess last week's events. Queue, pub/sub or log for each?"
+    idea_units:
+      - "(a) A work queue: each job goes to one worker and is deleted once done"
+      - "(b) Pub/sub, or a log: every subscriber gets the event, each at its own pace"
+      - "(c) A log: events are kept for days and can be replayed from any offset"
+    misconception: "That these are three names for one thing. They differ in who receives each message and whether it can be read again."
+    review: "2.3#queue-pubsub-log"
+
+  - id: "2.3-c2"
+    type: "decide"
+    objective: 5
+    prompt: "A payment worker may receive the same “charge” message twice. Design the idempotency, including the race between two workers."
+    idea_units:
+      - "An idempotency key per payment, such as the order ID"
+      - "Insert the key with a unique constraint in the same transaction as the effect, so of two racing workers only one succeeds"
+      - "Pass the same key to the payment provider, whose own idempotency stops a second charge on its side"
+      - "On a duplicate, return the stored result; keep keys longer than the longest retry window"
+    misconception: "That checking “was this charged?” before charging is enough. Two workers can both check, then both charge."
+    review: "2.3#delivery-idempotency"
+
+  - id: "2.3-c3"
+    type: "explain"
+    objective: 5
+    prompt: "A cache tier places keys with hash(key) mod 4, and you add a fifth server. What goes wrong, what would you use instead, and what does that still not fix?"
+    idea_units:
+      - "Almost every key's remainder changes, so about 80% of keys move and the cache suffers a storm of misses"
+      - "Consistent hashing: keys belong to the next server clockwise on a ring, so the new server takes only its slice, about a fifth"
+      - "Virtual nodes give each server many small slices, evening out load and spreading a failed server's keys"
+      - "It doesn't fix a hot key: one key still lives on one server, so cache it closer, or split it"
+    misconception: "That consistent hashing removes hot spots. It limits how many keys move; one very hot key is still hot."
+    review: "2.3#consistent-hashing"
+    also: ["2.3#hot-keys-ids"]
+
+  - id: "2.3-c4"
+    type: "decide"
+    objective: 9
+    spaced: true
+    prompt: "From 2.2: a network partition splits your two data centres. A bank-balance store must never show two different balances. What does it do during the partition, and what does that cost?"
+    idea_units:
+      - "It chooses consistency: the side without a majority refuses writes, and perhaps reads"
+      - "The cost is lower availability while the partition lasts"
+      - "Even without a partition, consistency costs latency: the “else” half of PACELC"
+    misconception: "That a good enough design keeps both consistency and availability during a partition. It can't."
+    review: "2.2#cap-pacelc"
+
+  # ===================== 2.4 APIs, regions, reliability and operations =====================
+  - id: "2.4-p1"
+    type: "predict"
+    prompt: "A partner's script calls your API 5,000 times a second and slows everyone else down. What would you put in place, and where?"
+    answer: "A rate limit per API key at the gateway, usually a token bucket, replying 429 with a Retry-After header so well-behaved clients back off, plus a quota per partner or plan. Adding servers would reward the abuse without protecting anyone else."
+
+  - id: "2.4-c1"
+    type: "explain"
+    objective: 6
+    prompt: "Three services call each other in a chain, and each retries a failed call 3 times. The bottom service slows down. What happens, and how do you prevent it?"
+    idea_units:
+      - "Retries multiply: 4 × 4 × 4 = 64 calls reach the bottom service for each request, a retry storm"
+      - "Without timeouts, callers' threads pile up waiting, and the failure cascades up the chain"
+      - "Retry at one layer only, with exponential backoff, jitter and a retry budget"
+      - "Timeouts set from each dependency's p99, and a circuit breaker that fails fast while it recovers"
+    misconception: "That more retries mean more reliability. During an outage, retries are extra load on the thing that's failing."
+    review: "2.4#timeouts-retries"
+
+  - id: "2.4-c2"
+    type: "decide"
+    objective: 5
+    prompt: "Choose how to push updates: (a) live scores to a million viewers, (b) a document several people edit at once, (c) a dashboard that changes every 5 minutes."
+    idea_units:
+      - "(a) SSE: one-way streaming over plain HTTP"
+      - "(b) WebSockets: two-way, low-latency messages"
+      - "(c) Polling: simple, and updates are rare"
+      - "Held connections need a connection tier and pub/sub to route each message to the right server"
+    misconception: "That WebSockets fit everything real-time. Two-way connections are stateful and harder to run; one-way updates don't need them."
+    review: "2.4#realtime"
+
+  - id: "2.4-c3"
+    type: "decide"
+    objective: 7
+    prompt: "A payments service may lose at most one minute of data, and must be back within 15 minutes, if its region fails. Which setup fits, and why not active–active?"
+    idea_units:
+      - "Those are an RPO of one minute and an RTO of 15 minutes"
+      - "Active–passive: a warm standby in another region, replicated asynchronously less than a minute behind, with automated failover"
+      - "Drill the failover regularly, so the RTO is real"
+      - "Active–active brings write conflicts between regions; take it on only when latency or uptime demands it"
+    misconception: "That zero data loss and zero downtime are a sensible default. They need synchronous writes across regions and active–active: the costliest point."
+    review: "2.4#multi-region"
+    also: ["2.2#replication"]
+
+  - id: "2.4-c4"
+    type: "decide"
+    objective: 5
+    spaced: true
+    prompt: "From 2.3: choose a partitioning scheme for (a) user profiles looked up by user ID, (b) events queried by time range, (c) a product where a few customers are huge."
+    idea_units:
+      - "(a) Hash on the user ID, for an even spread"
+      - "(b) Range on time, led by a hashed field such as the device ID, so “now” isn't one hot partition"
+      - "(c) A directory that maps each customer to a shard, so big customers can have their own"
+    misconception: "That one scheme fits every access pattern. Hashing spreads load but breaks range scans; ranges scan well but create hot spots."
+    review: "2.3#partitioning-schemes"
+
+  # ===================== 2.5 LLM calls and retrieval, in depth =====================
+  - id: "2.5-p1"
+    type: "predict"
+    prompt: "A product manual is 150,000 tokens and changes once a year; customers ask 50 questions a day about it. Build a retrieval pipeline, or send the whole manual with every question? Guess, with a rough cost."
+    answer: "Send it whole: 150,000 × 50 is 7.5 million input tokens a day, about $20 at $3 per million, less with prompt caching, and there's no pipeline to build or keep fresh. At 50,000 questions a day the same choice would cost about $20,000 a day, and retrieval wins."
+
+  - id: "2.5-d1"
+    type: "estimate"
+    objective: 3
+    prompt: "100,000 requests a day, each with 7,000 input tokens and 400 output tokens, at $3 per million input and $15 per million output tokens. What's the daily cost, and which side dominates? With 0.5 s to the first token and 80 tokens a second, how long until the full answer?"
+    scaffold:
+      - "Input tokens a day = 100,000 × 7,000 = __ million, so the input cost = __"
+      - "Output tokens a day = 100,000 × 400 = __ million, so the output cost = __"
+      - "Time = 0.5 s + 400 ÷ 80 = __ seconds"
+    idea_units:
+      - "Input: 700 million tokens, $2,100 a day"
+      - "Output: 40 million tokens, $600 a day; about $2,700 in total, with input about 78%"
+      - "So trim the retrieved context and cache the stable start of the prompt to cut cost"
+      - "Latency ≈ 0.5 + 5 = 5.5 seconds, so stream the answer"
+    misconception: "That output tokens always dominate the bill. With retrieval-heavy prompts, input usually does."
+    review: "2.5#token-economics"
+
+  - id: "2.5-c1"
+    type: "explain"
+    objective: 8
+    prompt: "Why doesn't halving the prompt halve the wait, when halving the output nearly does? And what limits how many requests one GPU serves at once?"
+    idea_units:
+      - "Prefill reads the prompt in parallel, so it mostly sets the time to first token"
+      - "Decode writes the answer one token at a time, so output length sets most of the total wait"
+      - "So cap and stream the output; trim the prompt mainly for cost and a faster first token"
+      - "Each generating request holds KV-cache memory that grows with its context, so memory caps concurrency"
+    misconception: "That latency scales with total tokens. Input and output tokens cost very different amounts of time."
+    review: "2.5#prefill-decode"
+
+  - id: "2.5-c2"
+    type: "explain"
+    objective: 8
+    prompt: "Walk through the query side of a RAG pipeline, from a follow-up question to the cited passages in the prompt. Where do permissions apply?"
+    idea_units:
+      - "Rewrite the follow-up into a standalone question"
+      - "Hybrid search: vector and keyword search side by side, each filtered by the user's permissions, before anything reaches the model"
+      - "Merge the two lists with reciprocal rank fusion, then let a reranker keep the best five"
+      - "Number the passages so the answer can cite them; measure the search alone with recall@k"
+    misconception: "That the model searches the documents itself, or that telling it the user's role enforces access. Retrieval and permissions live in your code."
+    review: "2.5#rag-pipeline"
+
+  - id: "2.5-c3"
+    type: "explain"
+    objective: 8
+    spaced: true
+    prompt: "From 1.7: why does a chat app send the whole conversation with every call, and what does that cost as a conversation grows?"
+    idea_units:
+      - "The model keeps nothing between calls: its weights are fixed, and only the prompt changes"
+      - "So the app resends the conversation so far, as input tokens, on every call"
+      - "Each turn costs more than the last, in money and in time to the first token"
+      - "So long conversations get trimmed or summarised, keeping what matters"
+    misconception: "That the model remembers the conversation. It sees only what each call sends."
+    review: "1.7#model"
+
+  # ===================== 2.6 Agents, serving, evals and safety, in depth =====================
+  - id: "2.6-p1"
+    type: "predict"
+    prompt: "An agent gets each step right 97% of the time. Guess how often an 8-step task succeeds end to end, and what you'd change."
+    answer: "About 78% (0.97⁸). Fewer steps, steps that check their own output, retries, and checkpoints that let a failed run resume all raise it; and you'd measure it over repeated runs (pass^k), not one lucky pass."
+
+  - id: "2.6-c1"
+    type: "explain"
+    objective: 8
+    prompt: "What stops an agent loop from running forever or burning money, and what does each of its tool calls need?"
+    idea_units:
+      - "It stops on a final answer, or when a hard cap on steps, tokens, time or cost is hit, all enforced in code"
+      - "When a cap is hit, it hands over to a person or fails safely"
+      - "Each tool call is validated, has a timeout, and carries an idempotency key, so a retried step can't act twice"
+      - "Every step is logged as a trace"
+    misconception: "That the model will know when to stop. Without caps in code, loops and runaway costs happen."
+    review: "2.6#workflows-agents"
+    also: ["2.6#compounding", "2.5#tool-calling"]
+
+  - id: "2.6-c2"
+    type: "estimate"
+    objective: 8
+    prompt: "A guardrail flags prompt-injection attempts and wrongly flags 1% of normal requests. One request in 10,000 is a real attack. Of the requests it flags, what share are real attacks, and what follows for the design?"
+    idea_units:
+      - "Per 10,000 requests: about 1 real attack and about 100 false alarms"
+      - "So only about 1% of flags are real: the base-rate effect"
+      - "Don't hard-block on one classifier; send flagged requests to safer handling, such as a model with no tools"
+      - "Layer defences, and let the architecture, not the filter, contain the damage"
+    misconception: "That a “99% accurate” filter is right 99% of the time it fires. When attacks are rare, most alarms are false."
+    review: "2.6#guardrails"
+
+  - id: "2.6-c3"
+    type: "estimate"
+    objective: 8
+    spaced: true
+    prompt: "From 1.7: your eval has 50 cases. After a prompt change, the pass rate rises from 80% to 86%. Can you ship it as an improvement?"
+    idea_units:
+      - "At 50 cases the 95% interval around 80% is about ±11 points, so +6 is within the noise"
+      - "You need hundreds of cases, or a paired comparison on the same cases"
+      - "Either way, check that no must-pass case or slice got worse"
+    misconception: "That any rise in score means the change helped. Small test sets swing by chance."
+    review: "1.7#evals"
+    also: ["2.6#evals"]
+
+  # ===================== 2.7 Faded designs: news feed and support agent =====================
+  - id: "2.7-f1"
+    type: "faded"
+    prompt: "**Your move** (about 2 minutes): fan-out on write, pushing each post into followers' feeds, or fan-out on read, gathering posts when a feed loads? Decide with the numbers."
+    idea_units:
+      - "On write, for most authors: about 200,000 small inserts a second, against about 4 million lookups a second on read"
+      - "Feed loads outnumber posts 20 to 1, so pay once at posting time, and a feed load becomes one list fetch"
+      - "The cost: seconds before a post reaches every feed, which the one-minute target allows"
+    review: "2.7#news-feed"
+    also: ["2.3#hot-keys-ids"]
+
+  - id: "2.7-f2"
+    type: "faded"
+    prompt: "**Your move** (about 2 minutes): an account with 50 million followers posts. What happens in your design so far, and how do you fix it?"
+    idea_units:
+      - "Fanned out on write, it's 50 million inserts in one burst, and a hot spot on every feed shard"
+      - "Mark accounts above a threshold, say a million followers, as pull accounts, with no fan-out"
+      - "Readers merge pull accounts' recent posts in at load time, from a widely replicated cache"
+      - "Skip fan-out to inactive users too, and rebuild their feeds when they return"
+    review: "2.7#news-feed"
+
+  - id: "2.7-f3"
+    type: "faded"
+    prompt: "**Your move** (about 2 minutes): which rung of the complexity ladder, for answering questions and issuing refunds of up to $50? Justify it."
+    idea_units:
+      - "A routing workflow: a small model classifies each message; order and policy questions are a single call with a tool or retrieval"
+      - "Refunds go through a fixed flow in code, not a free-roaming agent"
+      - "An agent only for the messy cases, if evals show the workflow fails them, with scoped tools and caps; never multi-agent here"
+      - "The rung is set by the quality bar and the cost of a mistake"
+    review: "2.7#support-agent"
+    also: ["2.6#workflows-agents"]
+
+  - id: "2.7-f4"
+    type: "faded"
+    prompt: "**Your move** (about 2 minutes): put the refund rules in the prompt, or in a policy engine that the refund tool must pass? And how do you stop a retried refund from paying twice?"
+    idea_units:
+      - "A policy engine, in code, enforces the hard rules every time; the prompt only explains them"
+      - "A model can be argued or injected out of a rule in its prompt; code can't"
+      - "An idempotency key on every refund, so a retried step can't pay twice"
+      - "Traces record the prompt and policy versions, for audits"
+    review: "2.7#support-agent"
+    also: ["2.6#trifecta", "2.4#api-design"]
+
+  # ===================== 2.9 Check and recap: a mixed check of Parts 1 and 2 =====================
+  - id: "2.9-c1"
+    type: "draw"
+    objective: 8
+    spaced: true
+    prompt: "From memory, draw both RAG pipelines, indexing and querying, from a document to a cited answer. Label at least 6 parts."
+    idea_units:
+      - "Indexing: parse, chunk, embed, and store each chunk with its source, version and permissions; a keyword index beside it"
+      - "Querying: rewrite the question to stand alone, then hybrid search, vector and keyword, filtered by the user's permissions"
+      - "Merge with rank fusion and rerank down to about five passages"
+      - "A prompt of instructions plus numbered passages; the answer cites them, or says it can't answer"
+    misconception: "That the model searches the documents itself. Your code retrieves and filters, before the call."
+    review: "2.5#rag-pipeline"
+    also: ["1.7#rag"]
+
+  - id: "2.9-c2"
+    type: "decide"
+    objective: 6
+    spaced: true
+    prompt: "Checkout calls five services in a row, synchronously, each 99.9% available, and one of them often slows down. What's checkout's availability, what are the two risks, and what would you change?"
+    idea_units:
+      - "Availability multiplies: 0.999⁵ ≈ 99.5%, about 3.6 hours down a month"
+      - "A slow service holds checkout's threads, so its slowness cascades into a checkout outage"
+      - "Timeouts from each service's p99, a circuit breaker, and one layer of budgeted retries"
+      - "Make non-essential steps asynchronous events, or degrade them, so checkout depends on fewer services"
+    misconception: "That a chain is as available as its weakest link. Availabilities multiply, so every synchronous hop costs some."
+    review: "2.4#overload"
+    also: ["2.4#timeouts-retries", "1.4#availability"]
+
+  - id: "2.9-c3"
+    type: "estimate"
+    objective: 3
+    spaced: true
+    prompt: "From 1.5: the peak is 30,000 requests a second, one server handles 2,000 a second flat out, you run servers 60% busy, and you must survive losing one of three data centres. How many servers?"
+    idea_units:
+      - "At 60% busy each server takes 1,200 a second, so 25 servers carry the peak"
+      - "If one of three data centres fails, the other two must hold all 25: 13 in each"
+      - "So 39 in total, about 50% more than the peak alone needs: a trade-off to say out loud"
+    misconception: "That you size for the average at 100% busy. You size for the peak, at a safe utilisation, with a failure domain gone."
+    review: "1.5#capacity"
+
+  - id: "2.9-c4"
+    type: "decide"
+    objective: 8
+    spaced: true
+    prompt: "An LLM feature costs $9,000 a day. 80% of its questions are simple FAQs, every prompt starts with the same 4,000 tokens of instructions, and a nightly job re-summarises yesterday's tickets. Name three cuts, and how you'd know quality held."
+    idea_units:
+      - "Route the FAQs to a small model, escalating when its answer fails validation"
+      - "Prompt caching for the identical 4,000-token opening, at about a tenth of the input price"
+      - "The nightly job through a batch API, at about half the price"
+      - "Prove each change with evals per route before it ships, and watch live signals after"
+    misconception: "That the only lever is a cheaper provider. Routing, caching and batching cut most bills by more."
+    review: "2.6#serving"

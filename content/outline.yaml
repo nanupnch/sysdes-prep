@@ -1,0 +1,325 @@
+# Structure of the 6-hour guide: three Parts, each a complete loop, as planned in PLAN.md §5.
+# Parts → modules → blocks. Review links point here as "<module>#<block>" or "<module>".
+# stage: where the module sits in the loop (orient, frame, classic, llm, see, do, check).
+# words: teaching-text budget (±10%). tier: 3 = ★★★, 2 = ★★, 1 = ★. facts: root facts 1–7 (PLAN.md §2).
+# A module whose text isn't written yet is shown as "being rewritten", with its planned topics.
+
+reading_wpm: 140
+
+parts:
+  - id: "1"
+    title: "Foundations"
+    tagline: "From zero to a complete, simple design"
+    minutes: 130
+    outcomes:
+      - "Explain how a web system and an LLM app work, part by part, in plain words"
+      - "Estimate requests, storage and tokens with a few rules of thumb"
+      - "Walk a simple design through all seven RESHAPE steps"
+    modules:
+      - { id: "1.1", minutes: 10, title: "Start here", stage: orient, words: 350, page: home }
+      - id: "1.2"
+        minutes: 8
+        title: "The interview and RESHAPE"
+        stage: frame
+        words: 650
+        diagrams: [reshape-flow]
+        blocks:
+          - { slug: scoring, title: "What interviewers score", tier: 3, facts: [] }
+          - { slug: reshape, title: "The seven steps and their time boxes", tier: 3, facts: [] }
+      - id: "1.3"
+        minutes: 7
+        title: "How a request travels"
+        stage: classic
+        words: 550
+        diagrams: [request-journey]
+        blocks:
+          - { slug: request-journey, title: "From browser to database and back", tier: 3, facts: [2] }
+          - { slug: parts-bin, title: "The parts bin", tier: 2, facts: [1] }
+      - id: "1.4"
+        minutes: 9
+        title: "Root facts and the words for quality"
+        stage: classic
+        words: 750
+        blocks:
+          - { slug: root-facts, title: "The seven root facts", tier: 3, facts: [1, 2, 3, 4, 5, 6, 7] }
+          - { slug: latency, title: "Latency and percentiles", tier: 3, facts: [2, 5] }
+          - { slug: availability, title: "Availability and the nines", tier: 3, facts: [3] }
+          - { slug: consistency, title: "Durability and consistency", tier: 3, facts: [3, 4] }
+      - id: "1.5"
+        minutes: 11
+        title: "Estimating in a few minutes"
+        stage: classic
+        words: 600
+        diagrams: [utilisation-wait]
+        blocks:
+          - { slug: rules-of-thumb, title: "Rules of thumb", tier: 3, facts: [1] }
+          - { slug: capacity, title: "Servers, storage and headroom", tier: 3, facts: [1, 5] }
+      - id: "1.6"
+        minutes: 22
+        title: "Classic blocks: the scaling ladder"
+        stage: classic
+        words: 1900
+        diagrams: [two-ladders, lb-stateless, cache-layers]
+        blocks:
+          - { slug: ladder, title: "One box, then a ladder", tier: 3, facts: [1] }
+          - { slug: servers, title: "More servers: load balancers and stateless apps", tier: 3, facts: [1, 3] }
+          - { slug: caches, title: "Caches and CDNs", tier: 3, facts: [2] }
+          - { slug: databases, title: "Databases and replicas", tier: 3, facts: [4] }
+          - { slug: queues, title: "Queues for slow work", tier: 3, facts: [5] }
+          - { slug: shards, title: "Shards, last", tier: 3, facts: [1] }
+          - { slug: services-regions, title: "Services and regions", tier: 2, facts: [2, 3] }
+          - { slug: failure, title: "When parts fail", tier: 3, facts: [3] }
+      - id: "1.7"
+        minutes: 17
+        title: "LLM blocks: the complexity ladder"
+        stage: llm
+        words: 1500
+        diagrams: [llm-call, rag-glance]
+        blocks:
+          - { slug: model, title: "What a model is", tier: 3, facts: [6] }
+          - { slug: tokens, title: "Tokens: cost and speed", tier: 3, facts: [6] }
+          - { slug: rag, title: "Retrieval: an open-book exam", tier: 3, facts: [6] }
+          - { slug: rungs, title: "A single call, a workflow or an agent", tier: 3, facts: [6] }
+          - { slug: evals, title: "How you know it's good", tier: 3, facts: [6] }
+          - { slug: injection, title: "Prompt injection", tier: 3, facts: [7] }
+      - id: "1.8"
+        minutes: 12
+        title: "Worked design: URL shortener"
+        stage: see
+        words: 1100
+        diagrams: [url-v1, url-v2]
+        blocks:
+          - { slug: requirements, title: "Requirements", tier: 3, facts: [] }
+          - { slug: estimate, title: "Estimate", tier: 3, facts: [1] }
+          - { slug: design, title: "Version 1, then version 2", tier: 3, facts: [1, 2] }
+          - { slug: codes, title: "Short codes and caching", tier: 3, facts: [3, 4] }
+          - { slug: trade-offs, title: "Trade-offs taken", tier: 2, facts: [] }
+      - id: "1.9"
+        minutes: 9
+        title: "Worked design: help-centre Q&A"
+        stage: see
+        words: 900
+        diagrams: [help-qa]
+        blocks:
+          - { slug: requirements, title: "Requirements and the quality bar", tier: 3, facts: [6] }
+          - { slug: estimate, title: "Tokens, cost and time", tier: 3, facts: [6] }
+          - { slug: design, title: "The design", tier: 3, facts: [6] }
+          - { slug: quality, title: "Evals and safety", tier: 3, facts: [6, 7] }
+          - { slug: trade-offs, title: "Trade-offs taken", tier: 2, facts: [] }
+      - id: "1.10"
+        minutes: 20
+        title: "Your turn: a guided design"
+        stage: do
+        words: 300
+        blocks:
+          - { slug: guided, title: "A pastebin, step by step", tier: 3, facts: [] }
+      - id: "1.11"
+        minutes: 5
+        title: "Check and recap"
+        stage: check
+        words: 250
+        blocks:
+          - { slug: recap, title: "Part 1 recap", tier: 3, facts: [] }
+
+  - id: "2"
+    title: "Going deeper"
+    tagline: "The same loop, at the depth interviewers probe"
+    minutes: 130
+    outcomes:
+      - "Compare two options with numbers and decide, for every core building block"
+      - "Raise failures, hot spots and abuse before the interviewer does"
+      - "Design LLM features with a quality bar, a cost budget and the lethal trifecta broken"
+    modules:
+      - id: "2.1"
+        minutes: 6
+        title: "What seniors do differently"
+        stage: frame
+        words: 500
+        blocks:
+          - { slug: senior-signals, title: "What a senior answer sounds like", tier: 3, facts: [] }
+          - { slug: driving, title: "Driving the conversation", tier: 3, facts: [] }
+      - id: "2.2"
+        minutes: 13
+        title: "Caching and data, in depth"
+        stage: classic
+        words: 950
+        diagrams: [leader-follower, pacelc]
+        blocks:
+          - { slug: cache-patterns, title: "Cache patterns and invalidation", tier: 3, facts: [2, 4] }
+          - { slug: stampedes, title: "Stampedes and hot keys", tier: 3, facts: [5] }
+          - { slug: data-modelling, title: "Modelling data by access pattern", tier: 3, facts: [1, 2] }
+          - { slug: replication, title: "Replication and its lag", tier: 3, facts: [3, 4] }
+          - { slug: cap-pacelc, title: "CAP and PACELC", tier: 3, facts: [3, 4] }
+      - id: "2.3"
+        minutes: 13
+        title: "Async work and partitioning, in depth"
+        stage: classic
+        words: 800
+        diagrams: [queue-vs-log, hash-ring]
+        code: [idempotent-consumer]
+        blocks:
+          - { slug: queue-pubsub-log, title: "Queue, pub/sub or log", tier: 3, facts: [5] }
+          - { slug: delivery-idempotency, title: "Delivery guarantees and idempotency", tier: 3, facts: [3] }
+          - { slug: backpressure, title: "Back-pressure and dead letters", tier: 2, facts: [5] }
+          - { slug: partitioning-schemes, title: "Choosing how to partition", tier: 3, facts: [1] }
+          - { slug: consistent-hashing, title: "Consistent hashing", tier: 3, facts: [1, 3] }
+          - { slug: hot-keys-ids, title: "Hot partitions and unique IDs", tier: 3, facts: [4, 5] }
+      - id: "2.4"
+        minutes: 11
+        title: "APIs, regions, reliability and operations"
+        stage: classic
+        words: 900
+        diagrams: [two-regions]
+        blocks:
+          - { slug: api-design, title: "API style, pagination and retries", tier: 3, facts: [3] }
+          - { slug: realtime, title: "Pushing updates to clients", tier: 3, facts: [2] }
+          - { slug: multi-region, title: "Regions and disaster recovery", tier: 3, facts: [2, 3] }
+          - { slug: timeouts-retries, title: "Timeouts, retries and circuit breakers", tier: 3, facts: [3, 5] }
+          - { slug: overload, title: "Overload and availability arithmetic", tier: 3, facts: [3, 5] }
+          - { slug: slos-cost, title: "SLOs, cost and security", tier: 3, facts: [1, 3, 7] }
+      - id: "2.5"
+        minutes: 14
+        title: "LLM calls and retrieval, in depth"
+        stage: llm
+        words: 800
+        diagrams: [prefill-decode, rag-pipeline]
+        blocks:
+          - { slug: prefill-decode, title: "Prefill, decode and the KV cache", tier: 3, facts: [1, 2, 6] }
+          - { slug: tool-calling, title: "Tool calls and structured output", tier: 3, facts: [6] }
+          - { slug: token-economics, title: "Token economics", tier: 3, facts: [6] }
+          - { slug: rag-pipeline, title: "The RAG pipeline", tier: 3, facts: [4, 6] }
+          - { slug: long-context, title: "Long context or retrieval", tier: 3, facts: [6] }
+      - id: "2.6"
+        minutes: 11
+        title: "Agents, serving, evals and safety, in depth"
+        stage: llm
+        words: 850
+        diagrams: [lethal-trifecta]
+        code: [agent-loop]
+        blocks:
+          - { slug: workflows-agents, title: "Workflows, agents and their caps", tier: 3, facts: [6] }
+          - { slug: compounding, title: "How reliability compounds", tier: 3, facts: [3, 6] }
+          - { slug: serving, title: "Routing, gateways and caching", tier: 3, facts: [1, 6] }
+          - { slug: evals, title: "Evals you can trust", tier: 3, facts: [6] }
+          - { slug: guardrails, title: "Guardrails and base rates", tier: 3, facts: [7] }
+          - { slug: trifecta, title: "Prompt injection and the lethal trifecta", tier: 3, facts: [7] }
+      - id: "2.7"
+        minutes: 17
+        title: "Faded designs: news feed and support agent"
+        stage: see
+        words: 750
+        diagrams: [feed-scaled]
+        blocks:
+          - { slug: news-feed, title: "News feed", tier: 3, facts: [1, 5] }
+          - { slug: support-agent, title: "Support agent", tier: 3, facts: [6, 7] }
+      - { id: "2.8", minutes: 40, title: "Mock A: notification service", stage: do, words: 600, mock: mock-a, diagrams: [mock-a] }
+      - id: "2.9"
+        minutes: 5
+        title: "Check and recap"
+        stage: check
+        words: 250
+        blocks:
+          - { slug: recap, title: "Part 2 recap", tier: 3, facts: [] }
+
+  - id: "3"
+    title: "Deep dives"
+    tagline: "The follow-up questions, answered"
+    minutes: 100
+    outcomes:
+      - "Answer the second and third “why?” on consistency, coordination and live changes"
+      - "Size and run self-hosted LLM serving, and know when to trust an eval result"
+      - "Name the crux of twelve common designs, and finish with a timed LLM mock"
+    modules:
+      - id: "3.1"
+        minutes: 11
+        title: "Consistency and coordination"
+        stage: classic
+        words: 950
+        diagrams: [fencing-tokens]
+        blocks:
+          - { slug: isolation, title: "Isolation levels and write skew", tier: 2, facts: [4] }
+          - { slug: quorums, title: "Quorums", tier: 2, facts: [3, 4] }
+          - { slug: consensus, title: "Consensus, leases and fencing", tier: 3, facts: [4] }
+          - { slug: sagas-outbox, title: "Two-phase commit, sagas and the outbox", tier: 3, facts: [3, 4] }
+          - { slug: metastable-cells, title: "Metastable failures and cells", tier: 2, facts: [3, 5] }
+      - id: "3.2"
+        minutes: 9
+        title: "Changing and extending live systems"
+        stage: classic
+        words: 700
+        diagrams: [expand-contract]
+        blocks:
+          - { slug: resharding, title: "Resharding and cross-shard queries", tier: 2, facts: [1, 4] }
+          - { slug: expand-contract, title: "Expand–contract", tier: 2, facts: [3] }
+          - { slug: dual-writes-cdc, title: "Dual writes and change data capture", tier: 2, facts: [3, 4] }
+          - { slug: rollouts, title: "Safe rollouts", tier: 2, facts: [3] }
+          - { slug: toolbox, title: "Specialist toolbox", tier: 1, facts: [1] }
+      - id: "3.3"
+        minutes: 8
+        title: "LLM serving and retrieval internals"
+        stage: llm
+        words: 750
+        blocks:
+          - { slug: gpu-capacity, title: "Self-hosting capacity", tier: 3, facts: [1, 6] }
+          - { slug: serving-internals, title: "Inside a serving engine", tier: 2, facts: [1, 5] }
+          - { slug: vector-indexes, title: "Vector indexes", tier: 2, facts: [1] }
+          - { slug: agentic-retrieval, title: "Agentic retrieval", tier: 2, facts: [6] }
+          - { slug: determinism, title: "Reasoning tokens and non-determinism", tier: 2, facts: [6] }
+      - id: "3.4"
+        minutes: 10
+        title: "Agents, quality and operations at depth"
+        stage: llm
+        words: 750
+        diagrams: [workflow-patterns]
+        blocks:
+          - { slug: multi-agent, title: "Multi-agent systems", tier: 2, facts: [6] }
+          - { slug: context-memory, title: "Context engineering and memory", tier: 2, facts: [6, 7] }
+          - { slug: eval-statistics, title: "Eval statistics and judges", tier: 3, facts: [6] }
+          - { slug: supply-chain, title: "Tool poisoning and the supply chain", tier: 2, facts: [7] }
+          - { slug: model-lifecycle, title: "Model lifecycle", tier: 3, facts: [6] }
+          - { slug: llm-operations, title: "Tenants, incidents and governance", tier: 2, facts: [1, 3, 7] }
+          - { slug: toolbox, title: "Toolbox: protocols and fine-tuning", tier: 1, facts: [6] }
+      - id: "3.5"
+        minutes: 13
+        title: "Pattern cards: twelve designs"
+        stage: see
+        words: 1000
+        blocks:
+          - { slug: chat, title: "Chat and messaging", tier: 2, facts: [2, 3] }
+          - { slug: proximity, title: "Ride-hailing and nearby search", tier: 2, facts: [1, 2] }
+          - { slug: video, title: "Video upload and streaming", tier: 2, facts: [1, 2] }
+          - { slug: file-sync, title: "File storage and sync", tier: 2, facts: [2, 4] }
+          - { slug: crawler, title: "Web crawler", tier: 2, facts: [1, 5] }
+          - { slug: ticketing, title: "Ticketing and flash sales", tier: 2, facts: [4, 5] }
+          - { slug: inference-api, title: "Self-hosted LLM inference API", tier: 2, facts: [1, 6] }
+          - { slug: ai-gateway, title: "Enterprise AI gateway", tier: 2, facts: [1, 3] }
+          - { slug: coding-agent, title: "Coding-agent platform", tier: 2, facts: [6, 7] }
+          - { slug: eval-pipeline, title: "Eval and release pipeline", tier: 2, facts: [6] }
+          - { slug: text-to-sql, title: "Text-to-SQL analytics assistant", tier: 2, facts: [6, 7] }
+          - { slug: semantic-search, title: "Semantic search over 100 million documents", tier: 2, facts: [1, 6] }
+      - { id: "3.6", minutes: 40, title: "Mock B: meeting assistant", stage: do, words: 600, mock: mock-b, diagrams: [mock-b] }
+      - id: "3.7"
+        minutes: 9
+        title: "The finish"
+        stage: check
+        words: 250
+        blocks:
+          - { slug: final-check, title: "The final check", tier: 3, facts: [] }
+          - { slug: interview-day, title: "Interview day", tier: 3, facts: [] }
+
+stages:
+  orient: "Orient"
+  frame: "Frame the method"
+  classic: "Learn the classic blocks"
+  llm: "Learn the LLM blocks"
+  see: "See a design solved"
+  do: "Do a design"
+  check: "Check and recap"
+
+appendices:
+  - { id: "A", title: "Pretest answers" }
+  - { id: "B", title: "Glossary" }
+  - { id: "C", title: "Numbers reference" }
+  - { id: "D", title: "Technology name decoder" }
+  - { id: "E", title: "More practice prompts, and an optional third mock" }
+  - { id: "F", title: "Sources, licence and changes" }

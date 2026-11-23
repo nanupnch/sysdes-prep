@@ -1,0 +1,92 @@
+<!-- alt: Five workflow patterns. Chaining: input, a first model call, a check, a second model call, output. Routing: a router sends the input to one of three specialised model calls. Parallelising: three model calls run at once on the same input, and their results are combined. Orchestrator and workers: an orchestrator model plans sub-tasks at run time, workers handle them, and a final call merges the results. Evaluator and optimiser: a generator drafts, an evaluator critiques, and the draft loops back until it passes. -->
+<!-- caption: All five are ordinary code with model calls inside: your code, not the model, fixes the order of the steps. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 520" width="760" height="520" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<defs><marker id="wp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#52525b"/></marker></defs>
+<rect x="0" y="0" width="760" height="520" fill="#ffffff"/>
+<rect x="10" y="10" width="240" height="250" rx="8" fill="#fafafa" stroke="#d4d4d8" stroke-width="1"/>
+<text x="130.0" y="34.0" text-anchor="middle" font-size="15" font-weight="650" fill="#18181b">Chaining</text>
+<rect x="75.0" y="50.0" width="110.0" height="28.0" rx="14" fill="#ffffff" stroke="#52525b" stroke-width="1.5"/>
+<text x="130.0" y="69.2" text-anchor="middle" font-size="15" font-weight="400" fill="#18181b">Input</text>
+<line x1="130.0" y1="78.0" x2="130.0" y2="91.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="75.0" y="92.0" width="110.0" height="28.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="130.0" y="111.2" text-anchor="middle" font-size="15" font-weight="400" fill="#14123d">LLM 1</text>
+<line x1="130.0" y1="120.0" x2="130.0" y2="133.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="75.0" y="134.0" width="110.0" height="28.0" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="130.0" y="153.2" text-anchor="middle" font-size="15" font-weight="400" fill="#1f1147">Check</text>
+<line x1="130.0" y1="162.0" x2="130.0" y2="175.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="75.0" y="176.0" width="110.0" height="28.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="130.0" y="195.2" text-anchor="middle" font-size="15" font-weight="400" fill="#14123d">LLM 2</text>
+<line x1="130.0" y1="204.0" x2="130.0" y2="217.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="75.0" y="218.0" width="110.0" height="28.0" rx="14" fill="#ffffff" stroke="#52525b" stroke-width="1.5"/>
+<text x="130.0" y="237.2" text-anchor="middle" font-size="15" font-weight="400" fill="#18181b">Output</text>
+<rect x="260" y="10" width="240" height="250" rx="8" fill="#fafafa" stroke="#d4d4d8" stroke-width="1"/>
+<text x="380.0" y="34.0" text-anchor="middle" font-size="15" font-weight="650" fill="#18181b">Routing</text>
+<rect x="325.0" y="55.0" width="110.0" height="28.0" rx="14" fill="#ffffff" stroke="#52525b" stroke-width="1.5"/>
+<text x="380.0" y="74.2" text-anchor="middle" font-size="15" font-weight="400" fill="#18181b">Input</text>
+<line x1="380.0" y1="83.0" x2="380.0" y2="102.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="325.0" y="103.0" width="110.0" height="30.0" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="380.0" y="123.2" text-anchor="middle" font-size="15" font-weight="400" fill="#1f1147">Router</text>
+<line x1="380.0" y1="133.0" x2="306.0" y2="180.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="274.0" y="181.0" width="64.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="306.0" y="200.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">LLM A</text>
+<line x1="380.0" y1="133.0" x2="380.0" y2="180.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="348.0" y="181.0" width="64.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="380.0" y="200.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">LLM B</text>
+<line x1="380.0" y1="133.0" x2="454.0" y2="180.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="422.0" y="181.0" width="64.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="454.0" y="200.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">LLM C</text>
+<text x="380.0" y="242.0" text-anchor="middle" font-size="13" font-weight="400" fill="#3f3f46" font-style="italic">one route per input</text>
+<rect x="510" y="10" width="240" height="250" rx="8" fill="#fafafa" stroke="#d4d4d8" stroke-width="1"/>
+<text x="630.0" y="34.0" text-anchor="middle" font-size="15" font-weight="650" fill="#18181b">Parallelising</text>
+<rect x="575.0" y="55.0" width="110.0" height="28.0" rx="14" fill="#ffffff" stroke="#52525b" stroke-width="1.5"/>
+<text x="630.0" y="74.2" text-anchor="middle" font-size="15" font-weight="400" fill="#18181b">Input</text>
+<line x1="630.0" y1="83.0" x2="556.0" y2="119.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="524.0" y="120.0" width="64.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="556.0" y="139.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">LLM</text>
+<line x1="556.0" y1="150.0" x2="630.0" y2="184.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<line x1="630.0" y1="83.0" x2="630.0" y2="119.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="598.0" y="120.0" width="64.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="630.0" y="139.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">LLM</text>
+<line x1="630.0" y1="150.0" x2="630.0" y2="184.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<line x1="630.0" y1="83.0" x2="704.0" y2="119.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="672.0" y="120.0" width="64.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="704.0" y="139.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">LLM</text>
+<line x1="704.0" y1="150.0" x2="630.0" y2="184.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="575.0" y="185.0" width="110.0" height="30.0" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+<text x="630.0" y="205.2" text-anchor="middle" font-size="15" font-weight="400" fill="#1f1147">Combine</text>
+<text x="630.0" y="242.0" text-anchor="middle" font-size="13" font-weight="400" fill="#3f3f46" font-style="italic">all at once, then merge or vote</text>
+<rect x="10" y="270" width="365" height="240" rx="8" fill="#fafafa" stroke="#d4d4d8" stroke-width="1"/>
+<text x="192.5" y="294.0" text-anchor="middle" font-size="15" font-weight="650" fill="#18181b">Orchestrator–workers</text>
+<rect x="117.5" y="312.0" width="150.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="192.5" y="332.2" text-anchor="middle" font-size="15" font-weight="400" fill="#14123d">Orchestrator LLM</text>
+<line x1="192.5" y1="342.0" x2="85.0" y2="374.0" stroke="#52525b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wp-arrow)"/>
+<rect x="40.0" y="375.0" width="90.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="85.0" y="394.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">Worker</text>
+<line x1="85.0" y1="405.0" x2="192.5" y2="435.0" stroke="#52525b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wp-arrow)"/>
+<line x1="192.5" y1="342.0" x2="190.0" y2="374.0" stroke="#52525b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wp-arrow)"/>
+<rect x="145.0" y="375.0" width="90.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="190.0" y="394.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">Worker</text>
+<line x1="190.0" y1="405.0" x2="192.5" y2="435.0" stroke="#52525b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wp-arrow)"/>
+<line x1="192.5" y1="342.0" x2="295.0" y2="374.0" stroke="#52525b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wp-arrow)"/>
+<rect x="250.0" y="375.0" width="90.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5" stroke-dasharray="5 3"/>
+<text x="295.0" y="394.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">Worker</text>
+<line x1="295.0" y1="405.0" x2="192.5" y2="435.0" stroke="#52525b" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#wp-arrow)"/>
+<rect x="117.5" y="436.0" width="150.0" height="30.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="192.5" y="456.2" text-anchor="middle" font-size="15" font-weight="400" fill="#14123d">Merge LLM</text>
+<text x="192.5" y="492.0" text-anchor="middle" font-size="13" font-weight="400" fill="#3f3f46" font-style="italic">sub-tasks decided at run time</text>
+<rect x="385" y="270" width="365" height="240" rx="8" fill="#fafafa" stroke="#d4d4d8" stroke-width="1"/>
+<text x="567.5" y="294.0" text-anchor="middle" font-size="15" font-weight="650" fill="#18181b">Evaluator–optimiser</text>
+<rect x="425.0" y="340.0" width="120.0" height="34.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="485.0" y="361.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">Generator LLM</text>
+<rect x="590.0" y="340.0" width="120.0" height="34.0" rx="6" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="650.0" y="361.9" text-anchor="middle" font-size="14" font-weight="400" fill="#14123d">Evaluator LLM</text>
+<path d="M 545.0 350.0 C 575.0 330.0, 560.0 330.0, 590.0 350.0" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<text x="567.5" y="328.0" text-anchor="middle" font-size="13" font-weight="400" fill="#3f3f46">draft</text>
+<path d="M 590.0 366.0 C 560.0 388.0, 575.0 388.0, 545.0 366.0" fill="none" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<text x="567.5" y="398.0" text-anchor="middle" font-size="13" font-weight="400" fill="#3f3f46">feedback</text>
+<line x1="650.0" y1="374.0" x2="650.0" y2="430.0" stroke="#52525b" stroke-width="1.5" marker-end="url(#wp-arrow)"/>
+<rect x="590.0" y="431.0" width="120.0" height="30.0" rx="14" fill="#ffffff" stroke="#52525b" stroke-width="1.5"/>
+<text x="650.0" y="451.2" text-anchor="middle" font-size="15" font-weight="400" fill="#18181b">Output</text>
+<text x="654.0" y="410.0" text-anchor="start" font-size="13" font-weight="400" fill="#3f3f46">passes</text>
+<text x="507.5" y="492.0" text-anchor="middle" font-size="13" font-weight="400" fill="#3f3f46" font-style="italic">revise until the criteria pass</text>
+</svg>

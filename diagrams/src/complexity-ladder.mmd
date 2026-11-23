@@ -1,0 +1,12 @@
+%% alt: The complexity ladder for LLM systems, climbed from the bottom. Rung 1, a single call, perhaps with retrieval: the cheapest and most predictable. Rung 2, a workflow: your code fixes the steps, so each is testable. Rung 3, a single agent: the model picks tools in a loop, using several times the tokens. Rung 4, multi-agent: a lead agent coordinates sub-agents with their own contexts, using the most tokens. You step up a rung only when evals show the one below can't meet the bar.
+%% caption: Each rung adds flexibility and costs tokens, latency and predictability. Step up only when evals say the rung below falls short.
+%%{init: {"flowchart": {"wrappingWidth": 460}}}%%
+flowchart BT
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  r1["1 · Single call, maybe with retrieval<br/>cheapest · most predictable"]:::model
+  r2["2 · Workflow<br/>your code fixes the steps · testable"]:::model
+  r3["3 · Single agent<br/>the model picks tools in a loop · several times the tokens"]:::model
+  r4["4 · Multi-agent<br/>a lead and sub-agents · the most tokens"]:::model
+  r1 -- "evals fall short" --> r2
+  r2 -- "evals fall short" --> r3
+  r3 -- "evals fall short" --> r4

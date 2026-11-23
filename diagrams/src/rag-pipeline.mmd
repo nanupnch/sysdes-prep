@@ -1,0 +1,26 @@
+%% alt: Two pipelines. Indexing, run ahead of time and on every change: documents are parsed and split into chunks, each chunk is embedded, and the chunks go into a vector index and a keyword index, each with its source, permissions and version. Querying, run for each question: the question is rewritten, then hybrid search runs over both indexes filtered by the user's permissions, the results are merged by rank fusion and reranked down to five passages, and the model answers from them with citations.
+%% caption: Indexing decides what can be found; querying decides what the model sees. Permissions travel with every chunk and filter every search.
+%%{init: {"flowchart": {"wrappingWidth": 210}}}%%
+flowchart LR
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+
+  subgraph I ["Indexing: ahead of time, and on every change"]
+    direction TB
+    docs[("Documents")]:::data
+    chunk["Parse, then chunk"]
+    emb["Embed each chunk"]:::model
+    idx[("Vector and keyword indexes,<br/>with source, permissions, version")]:::data
+    docs --> chunk --> emb --> idx
+  end
+  subgraph Q ["Querying: for each question"]
+    direction TB
+    q(["Question and user"])
+    rw["Rewrite as a standalone query"]:::model
+    search{{"Hybrid search over both indexes,<br/>filtered by permissions"}}:::control
+    rr["Rank fusion, then rerank to 5"]:::model
+    llm["Answer with citations"]:::model
+    q --> rw --> search --> rr --> llm
+  end
+  I ~~~ Q

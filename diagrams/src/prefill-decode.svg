@@ -1,0 +1,72 @@
+<!-- alt: A timeline of one model call, from 0 to 6 seconds. Prefill processes the whole 7,000-token prompt at once and ends at about 0.5 seconds, when the first token appears. Decode then writes the 400-token answer one token at a time, at about 80 tokens a second, finishing at about 5.5 seconds. The total is the time to first token plus output tokens divided by tokens per second. -->
+<!-- caption: Prefill is short and parallel; decode is long and serial. Output length, not prompt length, sets most of the wait. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 320" width="760" height="320" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<rect x="0" y="0" width="760" height="320" fill="#ffffff"/>
+<line x1="150" y1="232" x2="720" y2="232" stroke="#52525b" stroke-width="1.5"/>
+<line x1="150.0" y1="227" x2="150.0" y2="237" stroke="#52525b" stroke-width="1.5"/>
+<text x="150.0" y="256.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">0 s</text>
+<line x1="245.0" y1="227" x2="245.0" y2="237" stroke="#52525b" stroke-width="1.5"/>
+<text x="245.0" y="256.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">1 s</text>
+<line x1="340.0" y1="227" x2="340.0" y2="237" stroke="#52525b" stroke-width="1.5"/>
+<text x="340.0" y="256.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">2 s</text>
+<line x1="435.0" y1="227" x2="435.0" y2="237" stroke="#52525b" stroke-width="1.5"/>
+<text x="435.0" y="256.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">3 s</text>
+<line x1="530.0" y1="227" x2="530.0" y2="237" stroke="#52525b" stroke-width="1.5"/>
+<text x="530.0" y="256.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">4 s</text>
+<line x1="625.0" y1="227" x2="625.0" y2="237" stroke="#52525b" stroke-width="1.5"/>
+<text x="625.0" y="256.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">5 s</text>
+<line x1="720.0" y1="227" x2="720.0" y2="237" stroke="#52525b" stroke-width="1.5"/>
+<text x="720.0" y="256.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">6 s</text>
+<text x="20.0" y="92.0" text-anchor="start" font-size="15" font-weight="600" fill="#18181b">Prefill</text>
+<text x="20.0" y="112.0" text-anchor="start" font-size="13" font-weight="400" fill="#3f3f46">the prompt, in parallel</text>
+<text x="20.0" y="162.0" text-anchor="start" font-size="15" font-weight="600" fill="#18181b">Decode</text>
+<text x="20.0" y="182.0" text-anchor="start" font-size="13" font-weight="400" fill="#3f3f46">the answer, token by token</text>
+<rect x="150" y="75" width="47.5" height="40" rx="4" fill="#e0e7ff" stroke="#4338ca" stroke-width="1.5"/>
+<text x="207.5" y="100.0" text-anchor="start" font-size="14" font-weight="400" fill="#3f3f46">7,000 tokens at once</text>
+<rect x="198.5" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="210.4" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="222.2" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="234.1" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="246.0" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="257.9" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="269.8" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="281.6" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="293.5" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="305.4" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="317.2" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="329.1" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="341.0" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="352.9" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="364.8" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="376.6" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="388.5" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="400.4" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="412.2" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="424.1" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="436.0" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="447.9" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="459.8" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="471.6" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="483.5" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="495.4" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="507.2" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="519.1" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="531.0" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="542.9" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="554.8" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="566.6" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="578.5" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="590.4" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="602.2" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="614.1" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="626.0" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="637.9" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="649.8" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<rect x="661.6" y="145" width="9.9" height="40" rx="2" fill="#e0e7ff" stroke="#4338ca" stroke-width="1"/>
+<line x1="197.5" y1="48" x2="197.5" y2="232" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="197.5" y="40.0" text-anchor="middle" font-size="14" font-weight="600" fill="#5b21b6">first token ≈ 0.5 s (TTFT)</text>
+<line x1="672.5" y1="130" x2="672.5" y2="232" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="668.5" y="132.0" text-anchor="end" font-size="14" font-weight="600" fill="#5b21b6">last token ≈ 5.5 s</text>
+<text x="395.0" y="208.0" text-anchor="middle" font-size="14" font-weight="400" fill="#3f3f46">400 tokens at ≈ 80 per second</text>
+<text x="380.0" y="300.0" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">Total ≈ time to first token + output tokens ÷ tokens per second = 0.5 s + 400 ÷ 80 ≈ 5.5 s</text>
+</svg>

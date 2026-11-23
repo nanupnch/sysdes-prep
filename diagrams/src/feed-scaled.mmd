@@ -1,0 +1,33 @@
+%% alt: The scaled news feed. Clients call an API gateway. To post, the post service stores the post and publishes an event on a log; fan-out workers read the author's followers from the follow graph and push the post's ID into each active follower's list in the feed cache. To read, the feed service fetches the user's list from the feed cache, merges in recent posts from celebrity accounts, and hydrates the page from a post cache backed by the posts store. Photos come from object storage through a CDN.
+%% caption: Posting does the heavy work in the background; a feed load is a list fetch plus one batch read.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef cache fill:#fffbeb,stroke:#b45309,stroke-dasharray:6 4,color:#3b2405
+
+  client(["Clients"])
+  cdn["CDN"]:::cache
+  gw{{"API gateway"}}:::control
+  ps["Post service"]
+  fs["Feed service"]
+  posts[("Posts store")]:::data
+  log[["Post event log"]]
+  fw["Fan-out workers"]
+  follow[("Follow graph,<br/>cached")]:::data
+  feeds["Feed cache:<br/>lists of post IDs"]:::cache
+  pcache["Post cache"]:::cache
+  obj[("Object storage:<br/>photos")]:::data
+
+  client -- "1 · post, 5 · load" --> gw
+  client -- "photos" --> cdn
+  cdn -.-> obj
+  gw --> ps
+  gw --> fs
+  ps -- "2 · store" --> posts
+  ps -- "3 · publish" --> log
+  log --> fw
+  fw -- "followers" --> follow
+  fw -- "4 · push IDs" --> feeds
+  fs -- "6 · read list" --> feeds
+  fs -- "7 · hydrate" --> pcache
+  pcache -. "miss" .-> posts

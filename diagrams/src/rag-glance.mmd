@@ -1,0 +1,18 @@
+%% alt: Retrieval-augmented generation at a glance, top to bottom. Ahead of time, your documents are split into passages and stored in a search index. Then, for each question, your code searches the index for the passages most likely to answer it, puts the best five into the prompt with the instructions and the question, and the model answers from those passages, citing the ones it used.
+%% caption: An open-book exam. Your code finds the pages and hands them over; the model answers from them, so answers stay current and can cite their sources.
+%%{init: {"flowchart": {"wrappingWidth": 240}}}%%
+flowchart TB
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+
+  subgraph ahead ["Ahead of time"]
+    direction TB
+    docs[("Your documents")]:::data --> split["Split into passages"] --> index[("Search index")]:::data
+  end
+  ahead ~~~ q
+  q(["A question"]) --> search{{"Your code searches the index"}}:::control
+  index -.-> search
+  search -- "the best 5 passages" --> prompt["Prompt: instructions + passages + question"]
+  prompt --> model["The model answers from the passages"]:::model
+  model --> answer(["An answer that cites its passages"])

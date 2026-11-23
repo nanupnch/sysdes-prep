@@ -1,0 +1,26 @@
+%% alt: Clients call an API gateway, which checks identity and rate limits and routes each path to its service: users or orders. The orders service calls the payments service synchronously to charge, and publishes an order-placed event to an event log, which an email service consumes. Each service owns its own database.
+%% caption: Each service owns its data and is reached only through its API. Calls that need an answer go over RPC; the rest flows as events.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+
+  client(["Web and mobile clients"])
+  gw{{"API gateway<br/>identity · rate limits · routing"}}:::control
+  users["Users service"]
+  orders["Orders service"]
+  pay["Payments service"]
+  email["Email service"]
+  udb[("Users DB")]:::data
+  odb[("Orders DB")]:::data
+  pdb[("Payments DB")]:::data
+  log[["Event log"]]
+
+  client --> gw
+  gw -- "/users" --> users
+  gw -- "/orders" --> orders
+  orders -- "RPC: charge" --> pay
+  users --> udb
+  orders --> odb
+  pay --> pdb
+  orders -- "order placed" --> log
+  log --> email

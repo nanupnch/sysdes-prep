@@ -1,0 +1,106 @@
+# Appendix E: practice prompts for timed runs (35 minutes, RESHAPE, on paper and out loud).
+# Each has an id (E1, E2, …), a group (classic or llm), the prompt, the assumptions to use once the reader
+# has written their own, the crux a strong answer must find, and where the guide teaches it (review links).
+# Classic prompts follow the System Design Primer's additional questions; LLM prompts follow the AI System
+# Design Primer's 4.8 "Additional design questions".
+
+prompts:
+  # ----------------------------- classic -----------------------------
+  - id: "E1"
+    group: classic
+    prompt: "Design a rate limiter for a public API."
+    assume: "1 million API keys and 50,000 requests a second at peak, across 20 gateway servers. Limits such as 100 requests a minute per key, with tighter ones on expensive endpoints. The check may add about a millisecond. A brief overshoot is fine; a limiter failure that takes the API down is not."
+    crux: "Where the counters live, and what happens when they can't be reached. A **token bucket** per key allows bursts up to its size and a steady average. Keep the buckets in a shared in-memory store, checked and updated atomically in one round trip; buckets local to each gateway save the hop but let a key overshoot until they sync. If the store is down, fail open for ordinary limits and closed for limits that protect money or stop abuse. Answer 429 with a Retry-After header, so clients back off with jitter. One giant customer is a hot key: give it its own shard, or count locally and sync."
+    review: ["2.4#overload", "2.3#hot-keys-ids", "1.6#caches", "2.4#timeouts-retries"]
+
+  - id: "E2"
+    group: classic
+    prompt: "Design a key-value store that stays writable while machines fail."
+    assume: "100 TB of data, values under 1 MB, 1 million operations a second. Writes must succeed even while a data centre is down, and each caller chooses, per request, between a fast read and an up-to-date one."
+    crux: "Spread the keys with **consistent hashing** and virtual nodes, and keep each key on the next N nodes of the ring; nodes learn who is alive by **gossip**. Writes wait for W replies and reads for R; with W + R > N, every read overlaps the latest write, so callers trade speed for freshness by choosing W and R. A neighbour keeps writes for a dead replica and hands them back later (hinted handoff), and background comparison plus read repair fix replicas that drift. Concurrent writes to one key need version vectors, or last-writer-wins, which silently drops one of them. Quorums still aren't linearizable: “set only if unchanged” needs consensus."
+    review: ["2.3#consistent-hashing", "3.1#quorums", "2.2#replication", "3.1#consensus"]
+
+  - id: "E3"
+    group: classic
+    prompt: "Design search-as-you-type suggestions for a search box."
+    assume: "10 million daily users, 5 searches each, about 8 keystrokes per search: 400 million requests a day. The top 10 suggestions must arrive within 50 ms of a keystroke. Suggestions may be a day old, but a sudden news event should show up within minutes."
+    crux: "Every keystroke is a request: about 4,000 a second on average (400 million ÷ 10⁵ s) and several times that at peak, so the answers must be precomputed. A daily batch job counts queries from the logs and stores the top 10 completions for every prefix, in a prefix tree (trie) or a prefix table held in memory and partitioned by prefix. Clients wait for a pause in typing and cache answers; the edge caches popular prefixes. A small streaming job boosts trending queries between rebuilds. Filter blocked suggestions when the table is built, not on every read."
+    review: ["1.5#capacity", "1.6#caches", "2.3#partitioning-schemes"]
+
+  - id: "E4"
+    group: classic
+    prompt: "Design a service that runs scheduled jobs for other teams: “run this at 09:00”, “every hour”."
+    assume: "50 million schedules. Most fire on the hour, so about 10,000 jobs fall due in the first second of each hour. A job must start within a few seconds of its time and must never be lost; running one twice is bad, but survivable if the job is idempotent."
+    crux: "Exactly-once execution isn't possible across crashes, so aim for **at least once** plus an idempotency key per run (job ID and scheduled time). Keep next-run times in a table partitioned by time and hash. Pollers claim due jobs with a conditional update that sets a lease with an expiry, then queue them for workers. If a worker dies its lease runs out and the job is claimed again; a fencing token stops the old worker from finishing late. The top of the hour is a hot spot: spread jobs across the minute where callers allow it, and load the next minute's jobs into the queue ahead of time."
+    review: ["2.3#delivery-idempotency", "3.1#consensus", "2.3#hot-keys-ids", "2.4#overload"]
+
+  - id: "E5"
+    group: classic
+    prompt: "Design a digital wallet: people hold a balance and send money to each other."
+    assume: "20 million users and 2,000 transfers a second at peak. A balance must never go negative, money must never be created or lost, and every cent must be traceable. Phones retry when the network drops."
+    crux: "A **double-entry ledger**: each transfer appends a pair of entries that sum to zero, and a balance is the sum of an account's entries, kept as a running total for speed. The debit, the credit and the balance check commit in one transaction, either serializable or a conditional update (“only if the balance stays at or above zero”). Clients send an idempotency key, so a retried transfer applies once. When the two accounts live on different shards, use a database with cross-shard transactions, or a saga: hold the money, credit it, then settle, compensating if a step fails. Reconcile with the bank every day. Choose consistency: refuse a transfer rather than risk a wrong balance."
+    review: ["3.1#isolation", "3.1#sagas-outbox", "2.3#delivery-idempotency", "2.2#cap-pacelc"]
+
+  - id: "E6"
+    group: classic
+    prompt: "Design the monitoring system for a company's servers: metrics, dashboards and alerts."
+    assume: "50,000 servers, each reporting 1,000 metrics every 10 seconds: 5 million samples a second. Dashboards look back up to 30 days, and alerts must fire within a minute. Monitoring must keep working while the systems it watches are failing."
+    crux: "Writes dominate: 5 million samples a second at 16 bytes each is 80 MB/s, about 7 TB a day raw. Compressing consecutive samples brings it down to {{num tsdb_compression}}: under 1 TB a day. Write through a log into a time-series store partitioned by series, and roll old data up to 1-minute and 1-hour averages, so a 30-day chart reads thousands of points, not millions. Cap label cardinality: a user ID as a label multiplies the number of series. Evaluate alert rules on their own path, on fresh data. Run monitoring in a separate cell or region from what it watches, and monitor the monitor."
+    review: ["3.2#toolbox", "2.3#queue-pubsub-log", "2.4#slos-cost", "3.1#metastable-cells"]
+
+  - id: "E7"
+    group: classic
+    prompt: "Design “trending now”: the 10 most-mentioned topics in the last hour, in each country."
+    assume: "500 million posts a day, peaking at 20,000 a second, each tagged with a few topics. The list refreshes every minute. It may lag by a minute, and counts below the top 10 may be approximate."
+    crux: "Count in two stages. Posts land in a log partitioned by topic, so each topic's count has one owner, kept as 60 one-minute buckets that slide forward. Each partition reports its local top 10 per country every minute, and a merger picks the global top 10 from those lists. That is exact here: a topic in the global top 10 can't be beaten by 10 others in its own partition. A viral topic is a hot key, so pre-count on each producer and send sums. Drop spam and bot posts before counting, not after, and serve the lists from a cache."
+    review: ["2.3#queue-pubsub-log", "2.3#hot-keys-ids", "2.3#partitioning-schemes", "1.6#caches"]
+
+  # ----------------------------- LLM -----------------------------
+  - id: "E8"
+    group: llm
+    prompt: "Design an answer engine: people ask questions and get answers written from live web results, with citations."
+    assume: "1 million questions a day. An answer may need several web searches, the first words should appear within 2 seconds, and every claim must link to a page that supports it."
+    crux: "Each search adds seconds and tokens, so plan retrieval: a small model turns the question into two to four searches run in parallel, and only hard questions get a second round. Ten fetched pages of 1,000 tokens per answer is 10 billion input tokens a day, or $30,000 a day at illustrative prices, so a small model extracts the relevant passages and a larger one writes. Every page is untrusted content: the writer has no tools that act and nothing that sends data out. Code checks that each citation's quote exists on its page, and a judge samples for support. Cache search results and page extracts for minutes, and stream the answer."
+    review: ["3.3#agentic-retrieval", "2.5#token-economics", "2.6#guardrails", "1.7#injection"]
+
+  - id: "E9"
+    group: llm
+    prompt: "Design a voice agent that answers a bank's customer phone line."
+    assume: "2,000 calls at once at peak. A reply must start within about a second of the caller finishing, or the call feels broken. Callers interrupt, mumble and change their minds. Anything touching money or identity must follow the bank's rules exactly, and a person must always be reachable."
+    crux: "A latency budget across a pipeline that streams every stage. Speech recognition detects the end of a turn, the model starts writing, and speech synthesis speaks the first words before the rest exist; say 300 ms, 500 ms and 200 ms. So keep each turn's call small: cached instructions, a short context, a fast model, and a spoken filler while a slow lookup runs. An interruption cancels generation and speech at once. Identity checks and payments are tools behind rules enforced in code, never instructions in the prompt. Hand over to a person, with the transcript, when confidence drops or the caller asks. Eval on recorded calls: task success, wrong actions, and latency at the 95th percentile."
+    review: ["2.5#prefill-decode", "1.4#latency", "2.6#workflows-agents", "2.7#support-agent"]
+
+  - id: "E10"
+    group: llm
+    prompt: "Design an agent that triages alerts for a company's security team."
+    assume: "20,000 alerts a day, most of them noise. The agent reads each alert, gathers context from logs and the asset inventory, and recommends close, escalate or contain. Missing a real attack is far worse than a false alarm, and containment, such as disabling an account, is high-stakes."
+    crux: "Alert content is written by attackers (a log line can carry instructions), and the agent reads private data, so it must have no way out: read-only tools for investigation, nothing that sends data outside, and containment only with an analyst's approval. Optimise for catching real attacks, not overall accuracy: measure the miss rate on a labelled set of past incidents, and auto-close only alert types with a near-zero miss rate. Enrich each alert with fixed code first, and use an agent loop only for open-ended investigation, with caps on steps and cost. Trace every step for audit."
+    review: ["2.6#trifecta", "2.6#workflows-agents", "2.6#compounding", "3.4#eval-statistics"]
+
+  - id: "E11"
+    group: llm
+    prompt: "Design document extraction for opening business bank accounts: read the uploaded identity, income and company documents, and fill in the application."
+    assume: "50,000 applications a day with 5 documents each, many of them phone photos or scans. Every field (name, date of birth, company number, income) must be right, because a wrong value has regulatory consequences. Each decision needs an audit trail, and personal data must be protected."
+    crux: "Accuracy per field, not per document. Extract into a strict schema with the evidence for each field (page and position), then validate with code: check digits, valid dates, and agreement across documents, such as the same name on the passport and the company registry. Send low-confidence or inconsistent fields to a person. Measure per-field accuracy on a labelled set, sliced by document type and image quality. For audit, keep the originals, the extracted values, the model and prompt versions, and each reviewer's changes; keep personal data out of logs. Overnight reprocessing can use batch pricing."
+    review: ["2.5#tool-calling", "2.6#guardrails", "2.6#evals", "3.4#llm-operations"]
+
+  - id: "E12"
+    group: llm
+    prompt: "Design a research agent that spends up to an hour investigating a question, then writes a cited report."
+    assume: "5,000 reports a day for paying customers. A report reads 100 to 300 sources and may spend at most $5 on model usage. Customers can close the tab and come back later, and every claim needs a citation that checks out."
+    crux: "A long job, not a request: run it as a durable workflow that saves its progress, so a crash resumes rather than restarts, and tell the customer when it's done. A lead agent plans and hands sub-questions to parallel sub-agents, each with a fresh, small context, returning a short summary with its sources. That buys breadth at many times the tokens ({{num agent_tokens}}), so cap steps and spend per report. Keep notes and sources in external memory, not in the context. Verify each citation with code and a judge before the report is shown. Fetched pages are untrusted: the agents can search and read, and nothing they do sends private data out."
+    review: ["3.4#multi-agent", "3.4#context-memory", "3.3#agentic-retrieval", "2.6#trifecta"]
+
+  - id: "E13"
+    group: llm
+    prompt: "Design a bot that reviews every pull request in a company's repositories and comments on likely bugs."
+    assume: "4,000 pull requests a day across 2,000 repositories, and a review within 10 minutes. Engineers ignore a noisy bot, so precision matters more than coverage. The budget is about $2,000 a day."
+    crux: "Signal over noise: every comment costs every reader's attention, so post only findings above a confidence bar, and measure the share of comments that engineers act on. Gather context with code first (the diff, the files it touches, their callers and tests), then make the review call; a second pass that tries to refute each finding before posting raises precision. $2,000 ÷ 4,000 is $0.50 a review: about 150,000 input tokens at illustrative prices, so trim context to what the change touches and cache each repository's fixed instructions. The code under review is untrusted input: the bot can read and comment, but not merge, and it runs code only in a sandbox."
+    review: ["3.5#coding-agent", "2.6#evals", "2.5#token-economics", "2.6#trifecta"]
+
+  - id: "E14"
+    group: llm
+    prompt: "Design a personal assistant that remembers what each user tells it, across months of conversations."
+    assume: "10 million users, each with about 500 remembered facts after a year. Users must be able to see, correct and delete what it remembers, and one user's facts must never reach another user."
+    crux: "Memory is a write path that needs rules: store stable facts and preferences, not every message, as small records with a source and a date, and retrieve only the few that matter to this turn. Content the assistant reads, such as an email or a web page, must not write memories on its own, or an attacker can plant instructions that persist. Partition by user and check the user in code, not in the prompt. That also makes search trivial: 5 billion facts as 1,024-dimension vectors is about 20 TB, but each user's 500 need only an exact search. Deletion must reach every copy: the store, its index, caches and logs. Evaluate recall of the facts that matter and the rate of wrong or stale ones."
+    review: ["3.4#context-memory", "2.6#trifecta", "2.2#data-modelling", "3.3#vector-indexes"]

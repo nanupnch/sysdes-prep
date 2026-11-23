@@ -1,0 +1,64 @@
+<!-- alt: Two hash rings. Left: four servers, A, B, C and D, sit on a ring, and six keys sit between them; each key belongs to the next server clockwise. A new server, E, is added between A and B, and only key k1, which lies between A and E, moves from B to E; every other key stays where it was. Right: three servers each placed at four points around the ring, interleaved, so each server owns many small slices. -->
+<!-- caption: Each key belongs to the next server clockwise, so a new server takes over only its own slice. With virtual nodes, each server owns many small slices, which evens out load. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 400" width="760" height="400" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+<rect x="0" y="0" width="760" height="400" fill="#ffffff"/>
+<text x="215" y="34" text-anchor="middle" font-size="16" font-weight="600" fill="#18181b">One point per server: adding E</text>
+<circle cx="215" cy="215" r="135" fill="none" stroke="#52525b" stroke-width="2"/>
+<path d="M 215.0 80.0 A 135 135 0 0 1 310.5 119.5" fill="none" stroke="#3843b8" stroke-width="10" stroke-opacity="0.35" stroke-linecap="round"/>
+<path d="M 136.5 351.0 A 157 157 0 0 1 79.0 293.5" fill="none" stroke="#3f3f46" stroke-width="1.5" marker-end="url(#hr-arrow)"/>
+<text x="64" y="350" text-anchor="middle" font-size="15" fill="#3f3f46">clockwise</text>
+<defs><marker id="hr-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#3f3f46"/></marker></defs>
+<circle cx="261.2" cy="88.1" r="7" fill="#fef3c7" stroke="#3843b8" stroke-width="3"/>
+<text x="251.6" y="119.5" text-anchor="middle" font-size="15" fill="#3843b8" font-weight="600">k1</text>
+<circle cx="341.9" cy="168.8" r="7" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+<text x="315.5" y="183.4" text-anchor="middle" font-size="15" fill="#3f3f46" font-weight="400">k2</text>
+<circle cx="318.4" cy="301.8" r="7" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+<text x="297.0" y="288.8" text-anchor="middle" font-size="15" fill="#3f3f46" font-weight="400">k3</text>
+<circle cx="128.2" cy="318.4" r="7" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+<text x="146.2" y="302.0" text-anchor="middle" font-size="15" fill="#3f3f46" font-weight="400">k4</text>
+<circle cx="104.4" cy="137.6" r="7" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+<text x="127.4" y="158.6" text-anchor="middle" font-size="15" fill="#3f3f46" font-weight="400">k5</text>
+<circle cx="157.9" cy="92.6" r="7" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+<text x="169.8" y="123.0" text-anchor="middle" font-size="15" fill="#3f3f46" font-weight="400">k6</text>
+<rect x="198.0" y="66.0" width="34" height="28" rx="4" fill="#ffffff" stroke="#52525b" stroke-width="2"/>
+<text x="215.0" y="85.0" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">A</text>
+<rect x="333.0" y="201.0" width="34" height="28" rx="4" fill="#ffffff" stroke="#52525b" stroke-width="2"/>
+<text x="350.0" y="220.0" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">B</text>
+<rect x="198.0" y="336.0" width="34" height="28" rx="4" fill="#ffffff" stroke="#52525b" stroke-width="2"/>
+<text x="215.0" y="355.0" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">C</text>
+<rect x="63.0" y="201.0" width="34" height="28" rx="4" fill="#ffffff" stroke="#52525b" stroke-width="2"/>
+<text x="80.0" y="220.0" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">D</text>
+<rect x="293.5" y="105.5" width="34" height="28" rx="4" fill="#ffffff" stroke="#3843b8" stroke-width="2" stroke-dasharray="5 3"/>
+<text x="310.5" y="124.5" text-anchor="middle" font-size="15" font-weight="600" fill="#3843b8">E</text>
+<text x="303.5" y="64.1" font-size="15" fill="#3843b8">k1 moves B → E</text>
+<text x="215" y="209" text-anchor="middle" font-size="15" fill="#3f3f46">Every other key</text>
+<text x="215" y="228" text-anchor="middle" font-size="15" fill="#3f3f46">stays put</text>
+<text x="575" y="34" text-anchor="middle" font-size="16" font-weight="600" fill="#18181b">Virtual nodes: 3 servers × 4 points</text>
+<circle cx="575" cy="215" r="120" fill="none" stroke="#52525b" stroke-width="2"/>
+<circle cx="566.6" cy="95.3" r="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="566.6" y="100.3" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">A</text>
+<circle cx="647.2" cy="119.2" r="14" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+<text x="647.2" y="124.2" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">B</text>
+<circle cx="674.5" cy="147.9" r="14" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+<text x="674.5" y="152.9" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">C</text>
+<circle cx="694.1" cy="229.6" r="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="694.1" y="234.6" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">A</text>
+<circle cx="682.9" cy="267.6" r="14" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+<text x="682.9" y="272.6" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">C</text>
+<circle cx="621.9" cy="325.5" r="14" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+<text x="621.9" y="330.5" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">B</text>
+<circle cx="583.4" cy="334.7" r="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="583.4" y="339.7" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">A</text>
+<circle cx="502.8" cy="310.8" r="14" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+<text x="502.8" y="315.8" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">B</text>
+<circle cx="475.5" cy="282.1" r="14" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+<text x="475.5" y="287.1" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">C</text>
+<circle cx="455.9" cy="200.4" r="14" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+<text x="455.9" y="205.4" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">B</text>
+<circle cx="467.1" cy="162.4" r="14" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+<text x="467.1" y="167.4" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">A</text>
+<circle cx="528.1" cy="104.5" r="14" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+<text x="528.1" y="109.5" text-anchor="middle" font-size="15" font-weight="600" fill="#18181b">C</text>
+<text x="575" y="209" text-anchor="middle" font-size="15" fill="#3f3f46">Many small slices</text>
+<text x="575" y="228" text-anchor="middle" font-size="15" fill="#3f3f46">per server</text>
+</svg>

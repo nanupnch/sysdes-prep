@@ -1,0 +1,27 @@
+%% alt: The enterprise RAG assistant. On the indexing side, connectors for the wiki, drives, policies and tickets turn edits into change events; indexing workers parse, chunk and embed each changed document and write its chunks, with their allowed groups, into a vector index and a keyword index; a nightly repair job compares the sources with the index. On the question side, an employee's question reaches the assistant API, which looks up the user's groups in the identity provider, searches the indexes with that filter, and calls the model through the AI gateway.
+%% caption: Freshness comes from change events, permissions travel with every chunk, and every model call passes through the gateway. The documents themselves are untrusted content.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef untrusted fill:#fff1f2,stroke:#dc2626,stroke-dasharray:6 4,color:#450a0a
+
+  sources["Wiki · drives · policies · tickets"]:::untrusted
+  conn["Connectors"]
+  events[["Change events"]]
+  workers["Indexing workers<br/>parse · chunk · embed"]
+  idx[("Vector and keyword indexes<br/>each chunk with its allowed groups")]:::data
+  repair["Nightly repair job"]
+  user(["Employee"])
+  api["Assistant API"]
+  idp["Identity provider<br/>user → groups"]
+  gw{{"AI gateway"}}:::control
+  llm["LLM"]:::model
+
+  sources --> conn --> events --> workers --> idx
+  repair -. "compare, then fix" .-> idx
+  user -- "1 · question" --> api
+  api -- "2 · groups" --> idp
+  api -- "3 · filtered search" --> idx
+  api -- "4 · prompt" --> gw
+  gw --> llm

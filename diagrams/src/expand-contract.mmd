@@ -1,0 +1,9 @@
+%% alt: Five steps, top to bottom. One, expand: add the display_name column and deploy code that writes both columns. Two, backfill: copy fullname into display_name for old rows. Three, switch reads to display_name once the copy is verified. Four, contract: stop writing fullname. Five, drop the fullname column. Every step before the drop can be rolled back.
+%% caption: Every step works with both the old and the new code, so you can pause or roll back at any point before the final drop.
+flowchart TB
+  e["1 · Expand<br/>add display_name;<br/>write both columns"]
+  b["2 · Backfill<br/>copy fullname<br/>into old rows"]
+  r["3 · Switch reads<br/>to display_name,<br/>once verified"]
+  c["4 · Contract<br/>stop writing<br/>fullname"]
+  d["5 · Drop<br/>the fullname<br/>column"]
+  e --> b --> r --> c --> d

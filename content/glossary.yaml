@@ -1,0 +1,270 @@
+# Every term the guide defines, once. Teaching text marks a later use with [[term]] or [[term|shown text]];
+# the site turns it into a tap-or-hover definition. Appendix B lists every term with where it first appears:
+# its bold definition or first [[term]] in a module, else `in` (a module that teaches it in other words),
+# else the first module, question or mock that mentions it, else the summary or an appendix.
+# aliases: other spellings and forms that count as the term.
+terms:
+  - { id: "agent", term: "agent", def: "A model that calls tools in a loop, choosing each next step itself until the task is done." }
+  - { id: "ai-gateway", term: "AI gateway", def: "A proxy in front of model providers that handles quotas, routing, fallback, logging and cost tracking in one place." }
+  - { id: "api", term: "API", aliases: ["application programming interface"], def: "The agreed way programs talk to a service: which requests it accepts and what it sends back." }
+  - { id: "availability", term: "availability", aliases: ["nines"], def: "The share of time a system answers correctly, often written as nines, such as 99.9%." }
+  - { id: "back-pressure", term: "back-pressure", def: "Slowing down or rejecting new work when a system is full, instead of letting queues grow without limit." }
+  - { id: "base-rate", term: "base rate", def: "How common something is before you test for it. When the thing is rare, most alarms are false." }
+  - { id: "batch-api", term: "batch API", def: "A cheaper way to send many model requests at once, with results within hours rather than seconds." }
+  - { id: "cache", term: "cache", def: "A fast copy of data kept closer to the reader, so repeated reads skip the slower source." }
+  - { id: "cache-aside", term: "cache-aside", aliases: ["lazy loading"], def: "The app checks the cache first, loads from the database on a miss, and deletes the entry on write." }
+  - { id: "cache-hit", term: "cache hit", aliases: ["hit"], in: "1.6", def: "A read that the cache can answer." }
+  - { id: "cache-key", term: "cache key", def: "The name a cached value is stored under. For a CDN, it is usually the URL." }
+  - { id: "cache-miss", term: "cache miss", aliases: ["miss"], def: "A read the cache can't answer, so it goes on to the slower source." }
+  - { id: "cache-stampede", term: "cache stampede", aliases: ["thundering herd", "dog-piling"], def: "Many requests missing the same expired key at once and overloading the source behind it." }
+  - { id: "cap", term: "CAP theorem", aliases: ["CAP"], def: "During a network partition, a system must give up either consistency or availability." }
+  - { id: "cdn", term: "CDN", aliases: ["content delivery network"], def: "A content delivery network: caches in many cities that serve each user from somewhere nearby." }
+  - { id: "circuit-breaker", term: "circuit breaker", def: "A switch that stops calls to a failing dependency for a while, so it can recover and callers fail fast." }
+  - { id: "complexity-ladder", term: "complexity ladder", def: "Single call, then workflow, then single agent, then multi-agent. Climb a rung only when evals demand it." }
+  - { id: "consistency", term: "consistency", def: "Whether every reader sees the latest write. Strong means always; eventual means soon." }
+  - { id: "context-window", term: "context window", def: "The most tokens a model can take in and produce in a single call." }
+  - { id: "database", term: "database", def: "An organised store of data that programs read and update, usually on disk and over the network." }
+  - { id: "dead-letter-queue", term: "dead-letter queue", aliases: ["DLQ"], def: "Where messages go after repeated failures, so they stop blocking the rest of the queue." }
+  - { id: "decode", term: "decode", def: "The phase in which a model produces its output one token at a time." }
+  - { id: "dns", term: "DNS", aliases: ["domain name system"], def: "The internet's phone book: it turns a name like example.com into an IP address." }
+  - { id: "durability", term: "durability", def: "The guarantee that data, once written, survives crashes and disk failures." }
+  - { id: "edge", term: "edge", aliases: ["edge server"], def: "A CDN server close to users." }
+  - { id: "embedding", term: "embedding", def: "A list of numbers that represents the meaning of a text, so similar texts sit close together." }
+  - { id: "error-budget", term: "error budget", def: "The failure an SLO allows, such as about 43 minutes a month at 99.9%." }
+  - { id: "eval", term: "eval", aliases: ["evals", "evaluation"], def: "A repeatable test of model output quality, run before release and on samples of live traffic." }
+  - { id: "eviction", term: "eviction", aliases: ["evict", "evicts"], def: "Removing entries from a full cache to make room for new ones." }
+  - { id: "expand-contract", term: "expand–contract", def: "Changing a live schema in backward-compatible steps: add the new, migrate, then remove the old." }
+  - { id: "fan-out", term: "fan-out", def: "One event or request spreading to many recipients or servers." }
+  - { id: "fine-tuning", term: "fine-tuning", def: "Further training a model on your own examples to change its behaviour, style or format." }
+  - { id: "guardrail", term: "guardrail", def: "A check on what goes into or comes out of a model, such as an injection filter or a schema check." }
+  - { id: "hit-rate", term: "hit rate", aliases: ["hit ratio"], def: "The share of reads the cache answers." }
+  - { id: "horizontal-scaling", term: "horizontal scaling", aliases: ["scale out", "scaling out"], def: "Adding more machines, rather than moving to a bigger one." }
+  - { id: "hot-key", term: "hot key", def: "One key so popular that a single cache or database node can't serve it alone." }
+  - { id: "hot-set", term: "hot set", def: "The small share of data that gets most of the reads." }
+  - { id: "http", term: "HTTP", aliases: ["HTTPS"], def: "The request-and-response protocol that browsers and APIs speak. HTTPS is HTTP encrypted with TLS." }
+  - { id: "hybrid-search", term: "hybrid search", def: "Running keyword search and vector search together, then merging their results." }
+  - { id: "idempotency", term: "idempotency", aliases: ["idempotent"], def: "Doing an operation twice has the same effect as doing it once." }
+  - { id: "idempotency-key", term: "idempotency key", def: "A unique id sent with a request, so a repeat of it can be recognised and skipped." }
+  - { id: "in-memory-store", term: "in-memory store", aliases: ["in-memory key-value store"], def: "A data store kept in RAM, so reads take microseconds rather than milliseconds. Data can be lost on restart." }
+  - { id: "invalidation", term: "invalidation", aliases: ["invalidate"], def: "Removing or replacing a cached value because its source has changed." }
+  - { id: "jitter", term: "jitter", def: "Random variation added to timers, so many clients don't act at the same moment." }
+  - { id: "key-value-store", term: "key-value store", def: "A store that saves each value under a unique key and fetches it by that key." }
+  - { id: "kv-cache", term: "KV cache", def: "Memory holding a model's intermediate results for tokens it has already processed, so they aren't recomputed." }
+  - { id: "latency", term: "latency", def: "How long one request takes, from start to finish." }
+  - { id: "lethal-trifecta", term: "lethal trifecta", def: "Private data, untrusted content and a way to send data out. Together they let prompt injection steal data." }
+  - { id: "lfu", term: "LFU", aliases: ["least frequently used"], def: "Least frequently used: evict the entries read least often." }
+  - { id: "littles-law", term: "Little's law", def: "Items in a system = arrival rate × the time each item spends there." }
+  - { id: "load-balancer", term: "load balancer", def: "A component that spreads incoming requests across many servers and stops sending to unhealthy ones." }
+  - { id: "lru", term: "LRU", aliases: ["least recently used"], def: "Least recently used: evict the entry that has gone longest without a read." }
+  - { id: "network-partition", term: "network partition", def: "A network failure that splits machines into groups that can't reach each other." }
+  - { id: "object-storage", term: "object storage", def: "Storage for large files, such as images and video, addressed by key. Cheap, durable and effectively unlimited." }
+  - { id: "outbox", term: "outbox", aliases: ["outbox pattern"], def: "Writing an event in the same transaction as the data change, then publishing it from there." }
+  - { id: "p99", term: "p99", aliases: ["p50", "percentile", "99th percentile"], def: "The 99th-percentile latency: 99% of requests are faster than this. p50 is the median." }
+  - { id: "pacelc", term: "PACELC", def: "If there's a partition, choose availability or consistency; else, choose latency or consistency." }
+  - { id: "prefill", term: "prefill", def: "The phase in which a model reads the whole prompt in parallel, before its first output token." }
+  - { id: "prompt-caching", term: "prompt caching", aliases: ["prefix caching"], def: "Reusing the processed start of a repeated prompt, which cuts input cost and time to first token." }
+  - { id: "prompt-injection", term: "prompt injection", def: "Instructions hidden in content a model reads, which it may follow as if they came from you." }
+  - { id: "queue", term: "queue", aliases: ["message queue"], def: "A buffer that holds work until a worker is free to take it." }
+  - { id: "rag", term: "RAG", aliases: ["retrieval-augmented generation"], def: "Retrieval-augmented generation: fetching relevant text at question time and giving it to the model." }
+  - { id: "rate-limiting", term: "rate limiting", aliases: ["rate limit"], def: "Capping how many requests a caller can make in a period of time." }
+  - { id: "read-replica", term: "read replica", aliases: ["replica", "replicas", "follower", "followers"], def: "A copy of a database that serves reads and follows the leader's writes, usually a little behind." }
+  - { id: "read-through", term: "read-through", def: "A cache that loads missing values from the database itself." }
+  - { id: "refresh-ahead", term: "refresh-ahead", def: "Reloading a popular cache entry shortly before it expires." }
+  - { id: "replication-lag", term: "replication lag", def: "How far a replica is behind the leader." }
+  - { id: "request-coalescing", term: "request coalescing", aliases: ["single-flight"], def: "Letting one request fetch a missing value while identical requests wait for its result." }
+  - { id: "reranker", term: "reranker", def: "A model that reorders retrieved passages by reading each one together with the query." }
+  - { id: "rpo", term: "RPO", aliases: ["recovery point objective"], def: "Recovery point objective: how much recent data you can afford to lose in a disaster." }
+  - { id: "rto", term: "RTO", aliases: ["recovery time objective"], def: "Recovery time objective: how long you can afford to be down in a disaster." }
+  - { id: "saga", term: "saga", def: "A multi-step transaction made of local steps, each with a compensating step if a later one fails." }
+  - { id: "scaling-ladder", term: "scaling ladder", in: "1.6", def: "One box, separate database, load balancer, cache and CDN, replicas, queues, shards, services, regions." }
+  - { id: "shard", term: "shard", aliases: ["sharding"], def: "One slice of the data, when a dataset is split across several databases." }
+  - { id: "slo", term: "SLO", aliases: ["service-level objective", "SLI", "SLA"], def: "Service-level objective: a target for a measured indicator (the SLI), such as 99.9% of requests under 300 ms." }
+  - { id: "spof", term: "single point of failure", aliases: ["SPOF"], def: "A part whose failure stops the whole system." }
+  - { id: "sse", term: "SSE", aliases: ["server-sent events"], def: "Server-sent events: a one-way stream of updates from server to browser over ordinary HTTP." }
+  - { id: "stale-while-revalidate", term: "stale-while-revalidate", def: "Serving the old cached value while one request fetches a fresh one in the background." }
+  - { id: "stateless", term: "stateless", def: "A server that keeps no user data between requests, so any server can handle any request." }
+  - { id: "streaming", term: "streaming", def: "Sending output as it is produced, rather than all at once at the end." }
+  - { id: "structured-output", term: "structured output", def: "Model output constrained to a schema, such as JSON with fixed fields." }
+  - { id: "throughput", term: "throughput", def: "How much work a system completes per second." }
+  - { id: "tls", term: "TLS", def: "The encryption that protects data travelling between client and server: the S in HTTPS." }
+  - { id: "token", term: "token", aliases: ["tokens"], def: "The unit models read and write: about three-quarters of an English word." }
+  - { id: "ttft", term: "TTFT", aliases: ["time to first token"], def: "Time to first token: how long until the first part of a model's answer appears." }
+  - { id: "ttl", term: "TTL", aliases: ["time to live"], def: "Time to live: how long a cached copy, such as a DNS answer or a cached value, may be used before it expires." }
+  - { id: "versioned-key", term: "versioned key", aliases: ["version the key"], def: "A cache key that includes a version number, so a change makes the old entries unreachable." }
+  - { id: "websocket", term: "WebSocket", aliases: ["WebSockets"], def: "A two-way connection between browser and server that stays open." }
+  - { id: "workflow", term: "workflow", def: "Fixed code that calls a model at set steps, rather than letting the model choose the steps." }
+  - { id: "write-behind", term: "write-behind", aliases: ["write-back"], def: "Writing to the cache now and to the database later, in batches." }
+  - { id: "write-through", term: "write-through", def: "Writing to the cache and the database together, before confirming the write." }
+
+  # ---------- added with Part 2 ----------
+  - { id: "client", term: "client", def: "The program that sends requests: a browser, a mobile app or another service." }
+  - { id: "ip-address", term: "IP address", def: "The number that identifies a machine on a network, such as 203.0.113.7." }
+  - { id: "tcp", term: "TCP", def: "The protocol that gives two machines a reliable, ordered stream of data, resending anything lost on the way." }
+  - { id: "round-trip", term: "round trip", aliases: ["RTT", "round-trip time"], def: "The time for a message to reach another machine and for its reply to come back." }
+  - { id: "app-server", term: "app server", aliases: ["application server"], def: "A machine running your application code: it handles requests and talks to caches and databases." }
+  - { id: "api-gateway", term: "API gateway", def: "One front door for many services: it checks identity, enforces rate limits and routes each request." }
+  - { id: "search-index", term: "search index", aliases: ["inverted index"], def: "A structure mapping each word to the documents that contain it, so text search is fast." }
+  - { id: "monitoring", term: "monitoring", aliases: ["observability"], def: "Metrics, logs and traces that show what a system is doing, and when it goes wrong." }
+  - { id: "utilisation", term: "utilisation", aliases: ["utilization"], def: "The share of time a server is busy. Waiting time climbs steeply as it nears 100%." }
+  - { id: "vertical-scaling", term: "vertical scaling", aliases: ["scale up", "scaling up"], def: "Moving to a bigger machine, rather than adding more machines." }
+  - { id: "bandwidth", term: "bandwidth", def: "How much data a link or service can carry per second." }
+  - { id: "read-write-ratio", term: "read:write ratio", def: "How many reads there are for each write. High ratios point to caches; low ones to partitioning and queues." }
+  # ---------- added with Part 3 ----------
+  - { id: "redirect", term: "redirect", aliases: ["301", "302", "302 redirect"], def: "An HTTP answer telling the browser to fetch another URL. A 301 means permanently, and browsers may cache it; a 302 means for now." }
+  - { id: "base-62", term: "base-62", aliases: ["base 62", "base62"], def: "Writing a number with 62 symbols (0–9, a–z, A–Z), so a large number fits in a few characters." }
+  - { id: "negative-caching", term: "negative caching", in: "1.8", def: "Caching the fact that something doesn't exist, so repeated lookups for it skip the database." }
+  - { id: "read-your-writes", term: "read-your-writes", def: "A guarantee that you always see your own latest write, even while others may briefly see an older value." }
+  - { id: "token-bucket", term: "token bucket", def: "A rate limiter that refills tokens at a steady rate and spends one per request, so short bursts are allowed." }
+  - { id: "sticky-sessions", term: "sticky sessions", aliases: ["sticky session", "session affinity"], def: "A load balancer sending each user back to the same server. It hides server state rather than removing it." }
+  - { id: "l7-load-balancer", term: "L7 load balancer", aliases: ["L7", "layer 7"], def: "A load balancer that reads each HTTP request, so it can route by path, end TLS and retry, at more CPU per request." }
+  - { id: "health-check", term: "health check", aliases: ["health checks"], def: "A regular probe of each server, so traffic stops going to servers that fail it." }
+  - { id: "reverse-proxy", term: "reverse proxy", aliases: ["reverse proxies"], def: "A server in front of your servers that talks to clients for them: it ends TLS, compresses, caches and hides your layout." }
+  - { id: "quota", term: "quota", aliases: ["quotas"], def: "A long-run allowance of requests or usage per customer or plan, such as per month." }
+  - { id: "relational-database", term: "relational database", aliases: ["SQL database"], def: "A database of tables with a fixed schema, linked by keys, queried with SQL and offering transactions." }
+  - { id: "transaction", term: "transaction", aliases: ["transactions"], def: "A group of writes that succeed or fail together." }
+  - { id: "acid", term: "ACID", def: "Atomic, consistent, isolated and durable: the guarantees of a database transaction." }
+  - { id: "index", term: "index", aliases: ["indexes"], def: "A sorted copy of some columns pointing back to the rows, so lookups skip a full scan. Every write must update it." }
+  - { id: "nosql", term: "NoSQL", def: "Databases that drop joins, and usually cross-row transactions, for a simpler model that spreads across machines." }
+  - { id: "document-store", term: "document store", aliases: ["document database"], in: "2.2", def: "A database of JSON-like documents, each read and written whole." }
+  - { id: "wide-column-store", term: "wide-column store", in: "2.2", def: "A database of sorted rows grouped into partitions, built for heavy writes read by key and range." }
+  - { id: "graph-database", term: "graph database", in: "2.2", def: "A database of nodes and edges, for questions many relationships deep." }
+  - { id: "partition-key", term: "partition key", def: "The part of a key that decides which machine holds a row." }
+  - { id: "sort-key", term: "sort key", def: "The part of a key that orders rows within a partition, so a range read is one scan." }
+  - { id: "denormalising", term: "denormalising", aliases: ["denormalise", "denormalisation", "denormalization"], def: "Storing the same data more than once, each copy shaped for a different query." }
+  - { id: "replication", term: "replication", def: "Keeping copies of data on several machines." }
+  - { id: "leader", term: "leader", aliases: ["primary"], def: "The copy of a replicated database that accepts writes and streams them to its followers." }
+  - { id: "synchronous-replication", term: "synchronous replication", in: "2.2", def: "The leader confirms a write only once a follower has it: no loss on failover, but every write waits." }
+  - { id: "asynchronous-replication", term: "asynchronous replication", in: "2.2", def: "The leader confirms writes at once and followers catch up: fast, but failover can lose recent writes." }
+  - { id: "monotonic-reads", term: "monotonic reads", def: "A guarantee that one user's reads never go back in time, usually by pinning them to one replica." }
+  - { id: "linearizable", term: "linearizable", aliases: ["linearizability", "strong consistency"], def: "Behaving as if there were one copy, so every read sees the latest write." }
+  - { id: "eventual-consistency", term: "eventual consistency", aliases: ["eventually consistent"], def: "Copies converge once writes stop, with no promise of when." }
+  - { id: "isolation-level", term: "isolation level", aliases: ["isolation levels"], def: "How much concurrent transactions can see of each other: read committed, snapshot or serializable." }
+  - { id: "snapshot-isolation", term: "snapshot isolation", def: "Each transaction reads one consistent snapshot of the database. It still allows write skew." }
+  - { id: "serializable", term: "serializable", aliases: ["serializability"], def: "The strictest isolation level: results match running the transactions one at a time." }
+  - { id: "write-skew", term: "write skew", def: "Two transactions read the same data, then write different rows, together breaking a rule each one checked." }
+  - { id: "b-tree", term: "B-tree", def: "A sorted, page-based structure updated in place: fast reads, slower random writes." }
+  - { id: "lsm-tree", term: "LSM tree", aliases: ["log-structured merge tree"], def: "A store that buffers writes in memory and merges sorted files in the background: fast writes, slower reads." }
+  - { id: "worker", term: "worker", aliases: ["workers"], def: "A process that takes jobs from a queue and does them." }
+  - { id: "pub-sub", term: "pub/sub", aliases: ["publish–subscribe", "publish-subscribe"], def: "Messaging in which every subscriber gets its own copy of each message." }
+  - { id: "partitioned-log", term: "partitioned log", aliases: ["event log"], in: "2.3", def: "An append-only, ordered record of events, kept for days, which readers can replay from any offset." }
+  - { id: "offset", term: "offset", def: "How far a reader has read in a log, so it can resume or replay." }
+  - { id: "acknowledgement", term: "acknowledgement", aliases: ["ack", "acks", "acknowledge"], def: "A consumer telling the queue a message is handled, so it won't be delivered again." }
+  - { id: "at-least-once", term: "at-least-once delivery", aliases: ["at-least-once"], def: "Messages are redelivered until acknowledged, so none are lost but some arrive twice." }
+  - { id: "at-most-once", term: "at-most-once delivery", aliases: ["at-most-once"], def: "Messages are never redelivered, so none arrive twice but some are lost." }
+  - { id: "exactly-once", term: "exactly-once", aliases: ["exactly-once delivery", "effectively once", "effectively-once"], def: "Impossible to guarantee end to end over a network; built as at-least-once delivery plus idempotent handling." }
+  - { id: "poison-message", term: "poison message", aliases: ["poison messages"], def: "A message that fails every time it is processed. It goes to a dead-letter queue so it can't block the rest." }
+  - { id: "batch-processing", term: "batch processing", aliases: ["batch"], def: "Processing a bounded dataset on a schedule: efficient and easy to rerun, but hours stale." }
+  - { id: "stream-processing", term: "stream processing", def: "Processing events continuously as they arrive: seconds stale, but late and out-of-order events must be handled." }
+  - { id: "range-partitioning", term: "range partitioning", in: "2.3", def: "Each shard owns a range of keys: range scans are cheap, but new or popular keys create hot spots." }
+  - { id: "hash-partitioning", term: "hash partitioning", def: "A hash of the key picks the shard: an even spread, but range scans must ask every shard." }
+  - { id: "directory-partitioning", term: "directory partitioning", in: "2.3", def: "A lookup table maps each key, such as a tenant, to its shard, so big tenants can be moved alone." }
+  - { id: "consistent-hashing", term: "consistent hashing", aliases: ["hash ring"], def: "Nodes and keys on a ring of hash values; each key belongs to the next node clockwise, so adding a node moves only its slice." }
+  - { id: "virtual-nodes", term: "virtual nodes", aliases: ["virtual node", "vnodes"], def: "Many ring positions per server, which evens out load and spreads a failed server's keys." }
+  - { id: "hot-partition", term: "hot partition", aliases: ["hot partitions"], def: "A partition getting far more than its share of load, usually from one hot key." }
+  - { id: "resharding", term: "resharding", def: "Moving data between shards while still serving traffic." }
+  - { id: "snowflake-id", term: "Snowflake ID", aliases: ["Snowflake IDs", "Snowflake-style IDs"], def: "A 64-bit ID made of a timestamp, a worker ID and a sequence number: unique without coordination, and roughly time-ordered." }
+  - { id: "uuid", term: "UUID", aliases: ["UUIDs", "UUIDv4", "UUIDv7"], def: "A 128-bit ID that needs no coordination. Version 4 is random; version 7 starts with a timestamp." }
+  - { id: "quorum", term: "quorum", aliases: ["quorums"], def: "The number of nodes that must respond for a read or write to count. With R + W > N, every read overlaps the latest write." }
+  - { id: "scatter-gather", term: "scatter-gather", def: "Sending a query to every shard and waiting for all of them, so it is as slow as the slowest." }
+  - { id: "secondary-index", term: "secondary index", aliases: ["secondary indexes"], def: "An index on something other than the shard key. Local ones make reads scatter; global ones lag writes." }
+  - { id: "microservices", term: "microservices", aliases: ["microservice"], def: "Small services that each own their data and deploy independently, at the cost of network calls between them." }
+  - { id: "rest", term: "REST", def: "An API style of resources at URLs and standard HTTP verbs, usually with JSON." }
+  - { id: "rpc", term: "RPC", aliases: ["gRPC", "remote procedure call"], def: "Calling a function on another machine through a schema, usually with a compact binary encoding." }
+  - { id: "graphql", term: "GraphQL", def: "An API style in which the client asks for exactly the fields it needs in one request." }
+  - { id: "cursor", term: "cursor", aliases: ["cursor pagination", "cursor-based pagination"], def: "An opaque marker for the last item seen, so the next page starts after it, using an index." }
+  - { id: "long-polling", term: "long polling", def: "The server holds each request open until there is news, then the client asks again." }
+  - { id: "service-registry", term: "service registry", aliases: ["service discovery"], def: "A directory of service instances, health-checked, in which callers look up healthy addresses." }
+  - { id: "service-mesh", term: "service mesh", def: "A proxy beside every service that handles discovery, retries, encryption and metrics." }
+  - { id: "data-residency", term: "data residency", aliases: ["data-residency"], def: "Keeping data in the country or region the law requires." }
+  - { id: "active-passive", term: "active–passive", aliases: ["active-passive", "warm standby"], def: "One region serves while another stands by with replicated data, ready to take over." }
+  - { id: "active-active", term: "active–active", aliases: ["active-active"], def: "Every region serves and accepts writes, so concurrent writes to the same data can conflict." }
+  - { id: "correlated-failure", term: "correlated failure", aliases: ["correlated failures"], in: "1.4", def: "Several copies failing together because they share something: a zone, a version or a dependency." }
+  - { id: "timeout", term: "timeout", aliases: ["timeouts"], def: "A limit on how long a caller waits before giving up." }
+  - { id: "cascading-failure", term: "cascading failure", def: "A slow or failed part exhausting its callers, which then fail their own callers." }
+  - { id: "exponential-backoff", term: "exponential backoff", aliases: ["backoff"], def: "Doubling the wait between retries, so a struggling service gets room." }
+  - { id: "retry-budget", term: "retry budget", def: "A cap on retries, such as 10% of requests, so they can't multiply load during an outage." }
+  - { id: "load-shedding", term: "load shedding", def: "Rejecting excess work quickly, lowest priority first, so the rest is served well." }
+  - { id: "graceful-degradation", term: "graceful degradation", aliases: ["degrade gracefully"], def: "Serving a cheaper, reduced answer instead of an error when parts are down or overloaded." }
+  - { id: "metastable-failure", term: "metastable failure", def: "An overload that outlasts its trigger, because the system's own feedback, such as retries, keeps it going." }
+  - { id: "failover", term: "failover", def: "Switching to a replica when the leader fails: detect, promote, redirect, fence." }
+  - { id: "split-brain", term: "split brain", in: "3.1", def: "Two nodes both acting as leader and accepting writes." }
+  - { id: "blast-radius", term: "blast radius", def: "How much of a system one failure can reach." }
+  - { id: "cells", term: "cells", aliases: ["cell", "cell-based architecture"], def: "Identical, independent copies of a system, each serving a slice of customers, which cap the blast radius." }
+  - { id: "consensus", term: "consensus", aliases: ["Raft", "Paxos"], def: "A protocol by which a majority of nodes agree on a value, such as who leads, despite failures." }
+  - { id: "lease", term: "lease", aliases: ["leases"], def: "Leadership or a lock that expires unless renewed." }
+  - { id: "fencing-token", term: "fencing token", aliases: ["fencing tokens"], def: "A number that grows with each new leader; storage rejects writes carrying an older one." }
+  - { id: "two-phase-commit", term: "two-phase commit", aliases: ["2PC"], def: "A coordinator asks every participant to prepare, then commit: atomic, but it blocks if the coordinator fails." }
+  - { id: "compensating-action", term: "compensating action", aliases: ["compensating actions", "compensation"], def: "A step that undoes an earlier saga step, such as a refund." }
+  - { id: "metrics", term: "metrics", def: "Cheap numbers over time, such as request rate, errors and latency percentiles." }
+  - { id: "logs", term: "logs", def: "Detailed records of individual events, for debugging." }
+  - { id: "trace", term: "trace", aliases: ["traces", "tracing", "distributed tracing"], def: "One request followed across services as a tree of timed steps." }
+  - { id: "authentication", term: "authentication", def: "Checking who a caller is." }
+  - { id: "authorisation", term: "authorisation", aliases: ["authorization"], def: "Checking what a caller may do." }
+  - { id: "least-privilege", term: "least privilege", def: "Giving each user, service and key only the permissions its job needs." }
+  - { id: "tenant-isolation", term: "tenant isolation", in: "3.4", def: "Keeping each customer's data and load separate in a shared system." }
+  - { id: "backfill", term: "backfill", aliases: ["backfills"], def: "A bulk update of existing data, run in throttled, resumable batches." }
+  - { id: "dual-writes", term: "dual writes", def: "An app writing to two stores in turn. The copies drift when one write fails or the order differs." }
+  - { id: "cdc", term: "change data capture", aliases: ["CDC"], def: "Reading a database's own change log and applying each change, in order, to another store." }
+  - { id: "shadow-traffic", term: "shadow traffic", aliases: ["dark traffic"], def: "Real requests copied to a new version whose answers are compared, not served." }
+  - { id: "feature-flag", term: "feature flag", aliases: ["feature flags"], def: "A runtime switch that turns code on for chosen users or a percentage, without a deploy." }
+  - { id: "canary", term: "canary", aliases: ["canary release"], def: "Releasing to a small share of traffic first and comparing its SLIs with the old version." }
+  - { id: "geohash", term: "geohash", def: "A location encoded as a string in which a longer shared prefix means closer together." }
+  - { id: "quadtree", term: "quadtree", def: "A map split into four, again and again, until each cell holds few points." }
+  - { id: "bloom-filter", term: "Bloom filter", def: "A compact bit array that answers “definitely not seen” or “probably seen”." }
+  - { id: "hyperloglog", term: "HyperLogLog", def: "A sketch that estimates how many distinct items there are, in a few kilobytes." }
+  - { id: "time-series-store", term: "time-series store", aliases: ["time-series database"], def: "A store for timestamped readings that compresses them, rolls old ones up and deletes by age." }
+  - { id: "hydrate", term: "hydrate", aliases: ["hydrates", "hydration"], def: "To fill a list of IDs in with the full records, in one batch read." }
+  - { id: "pull-account", term: "pull account", aliases: ["pull accounts"], def: "An account with so many followers that its posts aren't fanned out; readers fetch them when the feed loads." }
+  - { id: "adaptive-bitrate", term: "adaptive bitrate streaming", aliases: ["adaptive bitrate"], def: "Video cut into short segments at several qualities, with the player choosing each next segment's quality from its measured bandwidth." }
+  - { id: "content-defined-chunking", term: "content-defined chunking", def: "Splitting a file where a rolling hash of its content matches a pattern, so an insertion changes only nearby chunks." }
+  - { id: "url-frontier", term: "URL frontier", def: "A crawler's prioritised queues of URLs still to fetch, with one queue per host to keep fetching polite." }
+  - { id: "gossip", term: "gossip", aliases: ["gossip protocol"], def: "Nodes passing membership and health news to random peers until every node knows it." }
+  - { id: "hinted-handoff", term: "hinted handoff", def: "A neighbour holding writes for a replica that is down, and handing them back when it returns." }
+  - { id: "trie", term: "trie", aliases: ["prefix tree"], def: "A tree of prefixes, in which each path from the root spells the start of a word." }
+  - { id: "llm", term: "large language model", aliases: ["LLM", "LLMs", "large language models"], def: "A model that predicts the next piece of text, given the text so far; the engine of every LLM feature." }
+  - { id: "weights", term: "weights", def: "The billions of numbers, set in training, that hold everything a model can do." }
+  - { id: "training", term: "training", def: "Setting a model's weights by having it predict text from a vast dataset: rare and very expensive." }
+  - { id: "inference", term: "inference", def: "Running a trained model with its weights frozen, which is what you call and pay for per token." }
+  - { id: "sampling", term: "sampling", in: "1.7", def: "Picking each next token from the model's probabilities, which is why identical prompts can differ." }
+  - { id: "temperature", term: "temperature", def: "A setting for how adventurous sampling is: low favours the likeliest token, high spreads the choice." }
+  - { id: "reasoning-tokens", term: "reasoning tokens", aliases: ["reasoning model", "reasoning models"], def: "Intermediate steps a reasoning model writes before its answer, generated at decode speed and billed as output." }
+  - { id: "tool-calling", term: "tool calling", aliases: ["tool call", "tool calls", "function calling"], def: "A model replying with a structured request to run a described tool; your code runs it and returns the result." }
+  - { id: "constrained-decoding", term: "constrained decoding", def: "Letting a model produce only tokens that keep its output valid against a schema." }
+  - { id: "bm25", term: "BM25", def: "The standard formula for ranking documents by keyword matches, favouring rare words." }
+  - { id: "rrf", term: "reciprocal rank fusion", aliases: ["RRF", "rank fusion"], def: "Merging ranked lists by each item's ranks rather than raw scores, so differently scored searches combine." }
+  - { id: "recall-at-k", term: "recall@k", def: "How often a relevant result appears in the top k: the measure of retrieval on its own." }
+  - { id: "ann", term: "approximate nearest-neighbour search", aliases: ["ANN", "approximate nearest neighbour"], def: "Vector search that trades a little recall for large speed-ups over comparing with every vector." }
+  - { id: "hnsw", term: "HNSW", aliases: ["hierarchical navigable small world"], def: "Hierarchical navigable small world: a layered graph index for approximate vector search." }
+  - { id: "agentic-retrieval", term: "agentic retrieval", def: "A model deciding what to search for, reading the results and searching again until it has enough." }
+  - { id: "chaining", term: "chaining", aliases: ["prompt chaining"], def: "A workflow in which each model call's output feeds the next, with checks in between." }
+  - { id: "routing", term: "routing", aliases: ["model routing"], def: "Sending each input to a different prompt, model or handler, chosen by a cheap classifier or rules." }
+  - { id: "parallelising", term: "parallelising", aliases: ["parallelisation", "parallelization"], def: "Running independent model calls at once, then combining or voting on their results." }
+  - { id: "orchestrator-workers", term: "orchestrator–workers", aliases: ["orchestrator-workers"], def: "One model call plans sub-tasks at run time, workers handle them, and a final call merges the results." }
+  - { id: "evaluator-optimiser", term: "evaluator–optimiser", aliases: ["evaluator-optimizer", "evaluator–optimizer"], def: "One model call drafts, another critiques against criteria, and the draft is revised until it passes." }
+  - { id: "pass-k", term: "pass^k", aliases: ["pass@k"], def: "The chance that all k tries at a task succeed: a measure of consistency, unlike pass@k." }
+  - { id: "context-engineering", term: "context engineering", def: "Choosing what goes into each model call: instructions, tools, retrieved text and history." }
+  - { id: "compaction", term: "compaction", in: "3.4", def: "Summarising or clearing old tool results so a long agent run keeps a lean context." }
+  - { id: "long-term-memory", term: "long-term memory", aliases: ["short-term memory"], def: "Facts an LLM system stores across sessions and puts back into the prompt when relevant." }
+  - { id: "mcp", term: "Model Context Protocol", aliases: ["MCP"], def: "An open standard for connecting models to tools and data, so a tool wrapped once works in any compatible app." }
+  - { id: "a2a", term: "Agent2Agent", aliases: ["A2A"], def: "A protocol for agents from different systems to hand tasks to each other." }
+  - { id: "cascade", term: "cascade", aliases: ["model cascade"], def: "Trying a small model first and escalating to a larger one when the answer fails validation or confidence is low." }
+  - { id: "semantic-cache", term: "semantic cache", aliases: ["semantic caching", "response cache"], def: "A cache that returns a stored answer for a request whose embedding is close, not identical, to an earlier one." }
+  - { id: "durable-execution", term: "durable execution", in: "2.6", def: "Saving each step's result so a long job resumes after a crash instead of starting again." }
+  - { id: "continuous-batching", term: "continuous batching", def: "Letting new requests join a running batch at every decode step, so the GPU stays busy." }
+  - { id: "paged-kv-cache", term: "paged KV cache", aliases: ["PagedAttention"], def: "Storing the KV cache in small blocks, like virtual-memory pages, so little memory sits reserved but unused." }
+  - { id: "quantization", term: "quantization", aliases: ["quantize", "quantized"], def: "Storing weights, the KV cache or vectors in fewer bits, cutting memory for a small loss of quality." }
+  - { id: "speculative-decoding", term: "speculative decoding", def: "A small draft model guesses several tokens and the large model checks them in one step, with identical output." }
+  - { id: "goodput", term: "goodput", def: "Throughput counting only the requests that meet their latency targets." }
+  - { id: "model-judge", term: "model judge", aliases: ["LLM judge", "LLM-as-judge"], def: "A model that grades another model's answers against a rubric; useful only once calibrated against human labels." }
+  - { id: "release-gate", term: "release gate", def: "A rule that a change ships only if its evals don't regress against the current version on any slice." }
+  - { id: "groundedness", term: "groundedness", aliases: ["grounded", "faithfulness"], def: "Whether an answer is supported by the sources it was given." }
+  - { id: "jailbreak", term: "jailbreak", aliases: ["jailbreaks"], def: "A user talking a model out of its own rules; unlike injection, the attacker is the user." }
+  - { id: "tool-poisoning", term: "tool poisoning", def: "Instructions hidden in a tool's description or results, which reach the model's context as if trusted." }
+  - { id: "rug-pull", term: "rug pull", def: "A tool changing its behaviour after you approved it." }
+  - { id: "sft", term: "supervised fine-tuning", aliases: ["SFT"], def: "Further training on example inputs paired with ideal outputs." }
+  - { id: "preference-tuning", term: "preference tuning", aliases: ["DPO", "direct preference optimisation"], def: "Further training on pairs of better and worse answers, for example with DPO." }
+  - { id: "distillation", term: "distillation", def: "Training a small model on a large model's outputs so it matches the large one on a task for less." }
+  - { id: "lora", term: "LoRA", aliases: ["low-rank adaptation"], def: "Low-rank adaptation: training a small add-on instead of all of a model's weights." }
+  - { id: "must-refuse", term: "must-refuse case", aliases: ["must-refuse cases", "must-refuse"], in: "1.7", def: "An eval case the system must decline, such as a question its sources don't answer or a user isn't allowed to see answered." }
+  - { id: "policy-engine", term: "policy engine", def: "Code that enforces business rules, such as refund limits, every time, whatever the model was told or talked into." }
+  - { id: "shadow-mode", term: "shadow mode", def: "An AI system drafting answers that humans review and send, before it ever answers customers directly." }

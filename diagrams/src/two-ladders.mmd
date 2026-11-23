@@ -1,0 +1,17 @@
+%% alt: Two ladders side by side, each climbed from the bottom. The scaling ladder for classic systems: one box, separate database, load balancer and stateless servers, cache and CDN, read replicas, queues, shards, services, regions. The complexity ladder for LLM systems: single call, workflow, single agent, multi-agent.
+%% caption: Each rung fixes the rung below's bottleneck and adds cost and new ways to fail. Climb only when a number or an eval says you must.
+flowchart LR
+  classDef rung fill:#ffffff,stroke:#52525b,color:#18181b
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+
+  subgraph classic ["Scaling ladder · classic"]
+    direction BT
+    c0["0 · One box"]:::rung --> c1["1 · Separate database"]:::rung --> c2["2 · Load balancer + stateless servers"]:::rung --> c3["3 · Cache + CDN"]:::rung --> c4["4 · Read replicas"]:::rung --> c5["5 · Queues"]:::rung --> c6["6 · Shards"]:::rung --> c7["7 · Services"]:::rung --> c8["8 · Regions"]:::rung
+  end
+
+  subgraph llm ["Complexity ladder · LLM"]
+    direction BT
+    l1["1 · Single call, with retrieval if needed"]:::model --> l2["2 · Workflow: fixed steps"]:::model --> l3["3 · Single agent: tools in a loop"]:::model --> l4["4 · Multi-agent"]:::model
+  end
+
+  classic ~~~ llm

@@ -1,0 +1,9 @@
+node_modules/
+_site/
+.DS_Store
+
+# The 8-hour edition, kept locally as source material and not published
+archive/
+
+# Local tool settings
+.claude/

@@ -1,0 +1,19 @@
+%% alt: A redirect. The browser asks the app server for a short code. The app checks the cache; on a hit it has the long URL; on a miss it reads a replica, falling back to the primary for a just-created link, then fills the cache. It sends a click event to the queue without waiting, and answers with a 302 redirect.
+%% caption: The only work on the critical path is a cache lookup. The click event is sent without waiting for it.
+sequenceDiagram
+  autonumber
+  participant B as Browser
+  participant A as App server
+  participant C as Cache
+  participant R as Replica
+  participant Q as Click queue
+  B->>A: GET /aZ3kP9q
+  A->>C: get aZ3kP9q
+  alt hit
+    C-->>A: long URL
+  else miss
+    A->>R: read (primary if brand new)
+    A->>C: set with TTL
+  end
+  A-)Q: click event, no wait
+  A-->>B: 302 to the long URL

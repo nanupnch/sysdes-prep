@@ -1,0 +1,21 @@
+%% alt: Cache-aside, read then write. Read: the app asks the cache, gets a miss, reads the database, and stores the value with a TTL. Write: the app updates the database first, then deletes the cache entry.
+%% caption: On a write, the database changes first, and the cache entry is deleted rather than overwritten.
+sequenceDiagram
+  autonumber
+  participant App as App server
+  participant Cache
+  participant DB as Database
+  rect rgba(254, 243, 199, 0.45)
+  Note over App,DB: Read
+  App->>Cache: get user:42
+  Cache-->>App: miss
+  App->>DB: read user 42
+  DB-->>App: row
+  App->>Cache: set user:42 with TTL 300 s
+  end
+  rect rgba(237, 233, 254, 0.45)
+  Note over App,DB: Write
+  App->>DB: update user 42
+  DB-->>App: ok
+  App->>Cache: delete user:42
+  end

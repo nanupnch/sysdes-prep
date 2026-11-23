@@ -1,0 +1,23 @@
+%% alt: A meeting assistant. The transcript arrives as untrusted input and is queued. A worker calls the model through an in-region AI gateway; the model has no tools. Code validates the structured output against the transcript and the calendar's attendee list. Drafts wait for the organiser when they are external or low-confidence. Filing workers use delegated permissions to create tickets and send recaps.
+%% caption: The model sees untrusted text but has no tools; code validates its output, and anything external or uncertain waits for a person.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef tool fill:#dcfce7,stroke:#15803d,color:#0b2e17
+  classDef model fill:#e0e7ff,stroke:#4338ca,color:#14123d
+  classDef human fill:#f3f4f6,stroke:#4b5563,color:#111827
+  classDef untrusted fill:#fff1f2,stroke:#dc2626,stroke-dasharray:6 4,color:#3f0a0a
+
+  tr["Transcript from the meeting platform"]:::untrusted --> q[["Job queue"]]
+  q --> wk["Summarise worker"]
+  wk --> gw{{"AI gateway: in-region, quotas, fallback"}}:::control
+  gw --> llm(["LLM: summarise and extract, no tools"]):::model
+  llm --> val{{"Validator: schema, quotes exist, owners are attendees"}}:::control
+  cal[("Calendar: attendees")]:::data -.-> val
+  val --> drafts[("Drafts and items")]:::data
+  drafts -- "external or low confidence" --> rev["Organiser review"]:::human
+  drafts -- "internal, high confidence" --> fw["Filing workers, idempotent"]
+  rev --> fw
+  fw --> tracker(["Ticket tracker"]):::tool
+  fw --> mail(["Recap email to attendees"]):::tool
+  evals[("Eval set and traces")]:::data -.-> gw

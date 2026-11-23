@@ -1,0 +1,26 @@
+%% alt: Version 2 of the URL shortener. Clients reach a load balancer that also rate-limits, then stateless app servers. Creates lease blocks of IDs from a code service and insert into the primary database, which replicates to read replicas. Redirects check a cache first, then a replica, and drop a click event onto a queue; analytics workers turn the events into click counts.
+%% caption: Redirects are served from the cache and replicas. Creates and click counting stay off the redirect's critical path.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+  classDef cache fill:#fffbeb,stroke:#b45309,stroke-dasharray:6 4,color:#3b2405
+
+  client(["Clients"])
+  lb{{"Load balancer + rate limits"}}:::control
+  app["Stateless app servers"]
+  ids["Code service<br/>leases ID blocks"]
+  cache["Cache<br/>code → long URL"]:::cache
+  primary[("Primary database")]:::data
+  replicas[("Read replicas")]:::data
+  queue[["Click-event queue"]]
+  workers["Analytics workers"]
+  stats[("Click counts")]:::data
+
+  client --> lb --> app
+  app -- "create: lease IDs" --> ids
+  app -- "create: insert" --> primary
+  primary -.->|replicate| replicas
+  app -- "redirect: 1 · check" --> cache
+  app -- "2 · on a miss" --> replicas
+  app -- "3 · click event" --> queue
+  queue --> workers --> stats

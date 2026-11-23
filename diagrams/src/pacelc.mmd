@@ -1,0 +1,16 @@
+%% alt: A decision tree. If the network is partitioned, choose availability, where both sides answer and reconcile later (carts, likes), or consistency, where the minority side refuses requests (balances, stock). Otherwise, choose low latency, where the nearest copy answers (feeds, profiles), or consistency, where each write waits for a majority (payments, usernames).
+%% caption: The partition choice is rare; the latency choice applies to every request. Decide per kind of data, not per system.
+flowchart TB
+  q(["Is the network partitioned?"])
+  p["Yes · P: choose A or C"]
+  e["No · Else: choose L or C"]
+  pa["A · availability<br/>both sides answer,<br/>reconcile later<br/>carts, likes"]
+  pc["C · consistency<br/>the minority side<br/>refuses requests<br/>balances, stock"]
+  el["L · latency<br/>the nearest copy<br/>answers<br/>feeds, profiles"]
+  ec["C · consistency<br/>each write waits<br/>for a majority<br/>payments, usernames"]
+  q --> p
+  q --> e
+  p --> pa
+  p --> pc
+  e --> el
+  e --> ec

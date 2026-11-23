@@ -1,0 +1,17 @@
+%% alt: One question, step by step. The employee asks the assistant API a question. The API asks the identity provider for the user's groups, cached for a minute, and gets them back. It sends a hybrid search to the index with the groups as a filter inside both searches, and gets back the top 50 passages the user may read. It reranks them to five, sends the numbered passages and the question to the model, through the gateway, and streams the answer back after checking that every citation points to a passage it supplied.
+%% caption: The permission filter runs inside the search, so text from documents the user can't open never reaches the model.
+sequenceDiagram
+  autonumber
+  participant E as Employee
+  participant A as API
+  participant I as Identity
+  participant S as Search
+  participant M as Model
+  E->>A: question
+  A->>I: user's groups (cached)
+  I-->>A: groups
+  A->>S: hybrid search, group filter
+  S-->>A: top 50 permitted passages
+  A->>M: 5 reranked passages + question
+  M-->>A: streamed answer citing [n]
+  A-->>E: answer, citations checked

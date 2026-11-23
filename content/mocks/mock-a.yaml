@@ -1,0 +1,114 @@
+id: "mock-a"
+title: "Notification service"
+kind: "classic"
+minutes: 35
+prompt: "Design a notification service that every product team in the company can use to notify our 100 million users."
+
+# Revealed only after the reader has written their own clarifying questions.
+clarifications:
+  - q: "Which channels?"
+    a: "Mobile push, email and SMS. An in-app inbox would be nice but isn't required."
+  - q: "Who sends, and what kinds of notification?"
+    a: "Internal services call it. Two kinds: transactional (password resets, order updates; one recipient each) and campaigns (one message to millions, a few times a week)."
+  - q: "How much traffic?"
+    a: "100 million users, 20 million of them active daily. About 50 million transactional notifications a day. A campaign can target all 100 million users."
+  - q: "How fast must they arrive?"
+    a: "Transactional: handed to the provider within 5 seconds at p99. Campaigns: within an hour."
+  - q: "Can a notification be lost or duplicated?"
+    a: "Transactional must never be lost. Duplicates are bad but tolerable if rare. Campaigns can be best-effort."
+  - q: "What about user preferences?"
+    a: "Users opt out per channel and category and set quiet hours in their own time zone. An unsubscribe must take effect immediately; it's a legal requirement."
+  - q: "Do we deliver the messages ourselves?"
+    a: "No. We call third-party push, email and SMS providers. Each has rate limits and occasional outages."
+  - q: "Do teams need tracking?"
+    a: "Yes: sent, delivered and opened where the channel reports it, with a dashboard per team."
+
+# Each probe unlocks at its minute. Score the matching rubric line 2 if you had already covered it.
+probes:
+  - at: 12
+    text: "A campaign to all 100 million users starts at 9:00. What happens to a password-reset email requested at 9:01?"
+    strong_answer:
+      - "Transactional and campaign traffic use separate queues or priority lanes, so the campaign can't delay the reset"
+      - "Worker capacity and provider rate limits are reserved for transactional sends"
+      - "The campaign is expanded in batches and paced across its hour"
+      - "Depth: campaign email goes out from separate IPs or domains, so its sending reputation can't hurt transactional delivery"
+  - at: 20
+    text: "The SMS provider starts timing out and keeps failing for 10 minutes. Walk me through what your system does."
+    strong_answer:
+      - "Short timeouts; retries with exponential backoff and jitter, inside a retry budget"
+      - "A circuit breaker opens, so workers stop hammering the failing provider"
+      - "Messages stay in a durable queue, so nothing is lost; fail over to a second SMS provider, or to push or email if the user allows it"
+      - "After recovery, drain the backlog at the provider's rate limit, dead-letter what keeps failing, and alert on queue age"
+  - at: 27
+    text: "A worker crashes after calling the push provider but before recording the send. What does the user see, and how do you prevent it?"
+    strong_answer:
+      - "The queue redelivers the message, so the user may get the notification twice (at-least-once delivery)"
+      - "Write a dedup record per notification, user and channel before the call, and check it on retry"
+      - "Pass an idempotency key to the provider where it supports one"
+      - "Exactly-once end to end is impossible; the goal is rare, harmless duplicates"
+
+# Scale: 2 = done unprompted, with a reason · 1 = partly, or only after a probe · 0 = missing.
+rubric:
+  - { id: "A01", step: "Requirements", line: "Split transactional from campaign traffic, with different latency and delivery guarantees", review: "2.1#senior-signals" }
+  - { id: "A02", step: "Requirements", line: "Stated the non-functional requirements: scale, latency per class, no loss for transactional, preference compliance", review: "1.2#reshape", also: ["1.4#consistency"] }
+  - { id: "A03", step: "Requirements", line: "Named non-goals, such as template authoring, the in-app inbox, or building our own delivery network", review: "2.1#senior-signals" }
+  - { id: "A04", step: "Estimate", line: "Estimated average and peak send rates (≈ 500/s transactional; a 100 M campaign over an hour ≈ 28,000/s) and used them to size workers and provider quotas", review: "1.5#rules-of-thumb", also: ["1.5#capacity"] }
+  - { id: "A05", step: "Estimate", line: "Estimated storage for send records (≈ 150 M sends/day × ~1 KB ≈ 150 GB/day) and set a retention policy", review: "1.5#rules-of-thumb" }
+  - { id: "A06", step: "Surface", line: "API takes recipients or a segment, template, data, category, priority and an idempotency key; returns an id; status via lookup or callbacks", review: "2.4#api-design" }
+  - { id: "A07", step: "Surface", line: "Data model: preferences and device tokens by user; send records by notification id; dedup keys with a TTL", review: "2.2#data-modelling" }
+  - { id: "A08", step: "High-level", line: "End-to-end flow: API → eligibility → queues → channel workers → providers, with delivery status flowing back", review: "1.6#queues" }
+  - { id: "A09", step: "High-level", line: "Separate queues or topics per class (and per channel), so campaigns can't starve transactional traffic", review: "2.3#queue-pubsub-log" }
+  - { id: "A10", step: "Analyse", line: "Campaign fan-out: expand segments in batches, paced across the window and within provider limits", review: "2.7#news-feed", also: ["2.4#overload"] }
+  - { id: "A11", step: "Analyse", line: "Checks preferences, quiet hours and unsubscribes at send time, with a preference cache invalidated on change", review: "2.2#cache-patterns" }
+  - { id: "A12", step: "Analyse", line: "Idempotency: caller key de-duplicates API retries; per-send dedup record before the provider call; at-least-once queues", review: "2.3#delivery-idempotency" }
+  - { id: "A13", step: "Analyse", line: "Per-provider rate limiting (token buckets) and batching where the provider allows it", review: "2.4#overload" }
+  - { id: "A14", step: "Pressure-test", line: "Provider outage: timeouts, backoff with jitter, circuit breaker, a secondary provider, dead-letter queue", review: "2.4#timeouts-retries" }
+  - { id: "A15", step: "Pressure-test", line: "Overload: alerts on queue age, workers scaled on lag, campaigns deferred or shed before transactional", review: "2.4#overload", also: ["2.3#backpressure"] }
+  - { id: "A16", step: "Pressure-test", line: "No single point of failure: replicated log across zones, stateless workers", review: "1.6#failure" }
+  - { id: "A17", step: "Pressure-test", line: "Noisy senders contained: per-team quotas so one team's burst can't hurt the others", review: "2.4#overload" }
+  - { id: "A18", step: "Pressure-test", line: "Security and compliance: authenticated callers, per-team permissions, PII kept out of logs, provable unsubscribe handling", review: "2.4#slos-cost" }
+  - { id: "A19", step: "Evaluate", line: "Named the trade-offs (at-least-once + dedup over exactly-once; pacing over speed) and the SLOs (p99 hand-off time per class, delivery success)", review: "2.4#slos-cost" }
+  - { id: "A20", step: "Communication", line: "Drove the session: said what came next, checked in, and had a working design by about minute 16", review: "2.1#driving" }
+  - { id: "A21", step: "Communication", line: "Decided rather than listing options, and backed each decision with a number or requirement", review: "2.1#senior-signals" }
+
+diagram: "mock-a"
+
+model_outline: |
+  **Requirements.** Two classes with different contracts. Transactional notifications have one recipient, must reach the provider within 5 s at p99, and must never be lost. Campaigns reach millions, within an hour, best-effort. Channels are push, email and SMS. Preferences apply per channel and category, with quiet hours, and unsubscribes take effect immediately. Non-goals: template authoring, the in-app inbox, building our own delivery network.
+
+  **Estimate.**
+  - **Transactional:** 50 M a day ÷ 10⁵ s ≈ 500/s on average, about 1,500/s at peak.
+  - **Campaigns:** one campaign of 100 M over an hour is about 28,000/s. Campaigns, not transactional traffic, set peak capacity.
+  - **Storage:** about 150 M sends a day × ~1 KB ≈ 150 GB a day. Keep 30 days hot (≈ 4.5 TB), then archive.
+  - **The real bottleneck** is the providers' rate limits, not our servers, so pacing is the design problem.
+
+  **Surface and schema.**
+  - **Send:** `POST /notifications` takes recipients or a segment, a template id, data, a category, a priority and an idempotency key. It returns a notification id.
+  - **Status:** `GET /notifications/{id}` returns status, and provider webhooks update it.
+  - **Stores:**
+    - preferences and device tokens, keyed by user and cached;
+    - templates;
+    - send records, keyed by notification id and partitioned by time;
+    - dedup keys with a TTL.
+
+  **High-level design.** The API checks auth and the idempotency key, then appends to a replicated log with separate topics for transactional and campaign traffic. A campaign expander turns a segment into paced batches. Before every send, an eligibility step checks preferences, quiet hours and unsubscribes. Per-channel worker pools call the providers through per-provider rate limiters. Webhooks write delivery status to the send records and an analytics stream.
+
+  **Deep dives.**
+  1. **Priority isolation:** separate topics and worker pools, with provider quota reserved for transactional sends.
+  2. **Fan-out:** page segments in batches of about 10,000 users, spread them across the window, and delay per time zone for quiet hours.
+  3. **Idempotency:** the caller's key de-duplicates API retries. A dedup record per notification, user and channel is written before the provider call. Provider idempotency keys are used where offered.
+  4. **Preferences:** read through a cache that is invalidated on change, so an unsubscribe applies within seconds.
+
+  **Pressure-test.**
+  - **Provider outage:** timeouts, backoff with jitter, a circuit breaker and a secondary provider. Dead-letter what keeps failing, and drain the backlog at the provider's rate limit.
+  - **Overload:** alert on queue age, scale workers on lag, and defer campaigns first.
+  - **Failure:** the log is replicated across zones and the workers are stateless, so there's no single point of failure.
+  - **Noisy senders:** per-team quotas.
+  - **Security:** authenticated callers, per-team permissions on categories, no PII in logs, and an audit trail for unsubscribes.
+
+  **Evaluate.**
+  - **Trade-offs:**
+    - At-least-once delivery plus dedup, instead of chasing exactly-once.
+    - Pacing campaigns trades speed for deliverability and provider limits.
+    - One shared service centralises compliance, but needs strong isolation between teams.
+  - **SLOs:** p99 time from API to provider hand-off per class, delivery success rate, and how long an unsubscribe takes to apply.

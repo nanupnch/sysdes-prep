@@ -1,0 +1,48 @@
+/* Print styles. The summary page fits one A4 or Letter sheet; the complete guide puts each Part on new pages. */
+
+@page { margin: 12mm; }
+
+body { background: #fff; color: #000; font-size: 10.5pt; line-height: 1.45; }
+.topbar, .rail, .backdrop, .skip-link, .site-footer, .pager, .crumbs, .continue, .fig-expand, .term-pop,
+textarea, .confidence, .predict-later, .mock-runner, .mock-steps, .mock-buttons, .refresher,
+.summary-tools, .recall-show, .checkpoint-result, .pt-actions, .pt-result { display: none !important; }
+.layout { display: block !important; max-width: none; padding: 0; }
+.content { max-width: none !important; margin: 0; padding: 0; }
+.in-short { background: #f4f4f4; border-color: #bbb; }
+a { color: inherit; text-decoration: none; }
+h2 { break-after: avoid; border-top-color: #bbb; }
+h3 { break-after: avoid; }
+.callout, .figure, .item, .mock-card, tr, .pt-q { break-inside: avoid; }
+.callout { border-left-color: #555; background: #f4f4f4; }
+.callout-label::before { background: #555; color: #fff; }
+.figure-art { border: 0; padding: 0; }
+.figure-art svg { max-height: 18cm; min-width: 0 !important; }
+.item { border: 0; padding: 0; margin-bottom: 0.6rem; }
+.term { border-bottom: 0; }
+.term::after { display: none !important; }
+.not-built { color: inherit; }
+
+/* Print view: each Part starts a new page; answers sit in keys at the end of each Part. */
+.print-part > .part-title { break-before: page; border-top: 0; padding-top: 0; margin-top: 0; }
+.print-part:first-of-type > .part-title { break-before: auto; }
+.answer-key { break-before: page; }
+.print-summary { break-before: page; }
+
+/* ---------- one-page summary ---------- */
+@page summary { margin: 8mm; }
+.page-summary .content { page: summary; }
+.page-summary { font-size: 7.9pt; line-height: 1.22; }
+.page-summary .content, .print-summary { max-width: none; }
+.page-summary .summary-body, .print-summary .summary-body { column-count: 3; column-gap: 5mm; }
+.page-summary .summary-body > h1, .print-summary .summary-body > h1 { column-span: all; font-size: 12pt; margin: 0 0 1.5mm; }
+.page-summary .recall-block, .print-summary .recall-block { break-inside: avoid; margin: 0 0 2mm; }
+.page-summary .recall-block.span-all, .print-summary .recall-block.span-all { column-span: all; }
+.page-summary .recall-block > *, .print-summary .recall-block > * { display: revert !important; }
+.page-summary h2, .print-summary h2 { font-size: 8.8pt; margin: 0 0 0.8mm; padding: 0; border: 0; }
+.page-summary p, .page-summary ul, .page-summary ol,
+.print-summary p, .print-summary ul, .print-summary ol { margin: 0 0 1mm; }
+.page-summary ul, .page-summary ol, .print-summary ul, .print-summary ol { padding-left: 3.5mm; }
+.page-summary li, .print-summary li { margin: 0; }
+.page-summary .table-wrap, .print-summary .table-wrap { margin: 0 0 1mm; overflow: visible; }
+.page-summary table, .print-summary table { font-size: 7.2pt; line-height: 1.18; }
+.page-summary th, .page-summary td, .print-summary th, .print-summary td { padding: 0.25mm 0.8mm; }

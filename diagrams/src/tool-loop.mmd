@@ -1,0 +1,16 @@
+%% alt: A tool-calling loop. The user asks the app where an order is. The app sends the question and the tool definitions to the model. The model replies with a tool call, get_order_status with the order ID. The app validates it, runs the tool against the orders system and gets back "shipped, arrives Tuesday". The app sends that result to the model, which writes the final answer, and the app shows it to the user.
+%% caption: The model never runs anything itself: it asks, and your code decides whether and how to act.
+sequenceDiagram
+  autonumber
+  participant U as User
+  participant A as App
+  participant M as Model
+  participant T as Orders tool
+  U->>A: Where is order ORD-12345678?
+  A->>M: question + tool definitions
+  M-->>A: call get_order_status("ORD-12345678")
+  A->>T: validated call
+  T-->>A: shipped, arrives Tuesday
+  A->>M: tool result
+  M-->>A: final answer
+  A-->>U: It shipped and arrives on Tuesday

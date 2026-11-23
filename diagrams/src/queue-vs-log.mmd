@@ -1,0 +1,25 @@
+%% alt: Two ways to move messages. Left, a work queue: producers add jobs, and each job goes to exactly one of two workers, then is deleted. Right, a log with three partitions of ordered events, kept after reading: producers choose a partition by key, and a billing group and an analytics group each read all the partitions at their own offsets, the analytics group replaying from the start.
+%% caption: A queue hands each job to one worker and forgets it. A log keeps every event, in order within its partition, and each group of readers keeps its own place.
+%%{init: {"flowchart": {"wrappingWidth": 260}}}%%
+flowchart LR
+  subgraph Q ["Work queue: each job to one worker"]
+    direction TB
+    prodq["Producers"]
+    queue[["Job queue"]]
+    w1["Worker 1"]
+    w2["Worker 2"]
+    prodq --> queue
+    queue -- "job 1" --> w1
+    queue -- "job 2" --> w2
+  end
+  subgraph L ["Log: kept, replayable, ordered per partition"]
+    direction TB
+    prodl["Producers, by key"]
+    parts[["Partition 0: e1 e4 e7<br/>Partition 1: e2 e5 e8<br/>Partition 2: e3 e6 e9"]]
+    billing["Billing group<br/>at offset 7"]
+    analytics["Analytics group<br/>replaying from 0"]
+    prodl --> parts
+    parts --> billing
+    parts --> analytics
+  end
+  Q ~~~ L

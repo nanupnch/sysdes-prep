@@ -1,0 +1,15 @@
+%% alt: A write and a stale read. The app sends a write to the leader. The leader copies it to the synchronous follower and waits for its acknowledgement before telling the app the write is committed. The asynchronous follower gets the copy later, so a read sent to it in the meantime returns the old value.
+%% caption: The leader confirms a write only once the synchronous follower has it. The asynchronous follower lags, so a read there can still return the old value.
+sequenceDiagram
+  autonumber
+  participant A as App
+  participant L as Leader
+  participant S as Sync follower
+  participant F as Async follower
+  A->>L: write x = 2
+  L->>S: copy x = 2
+  S-->>L: stored
+  L-->>A: committed
+  A->>F: read x
+  F-->>A: x = 1 (stale)
+  L-)F: copy x = 2, arriving late

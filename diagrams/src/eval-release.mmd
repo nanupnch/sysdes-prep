@@ -1,0 +1,19 @@
+%% alt: A release loop. A change to a prompt, a model or a retrieval step runs the offline evals: the test set graded by code checks, a calibrated model judge and human review. A release gate then compares every slice with the current version. A regression sends the change back to be fixed. A pass goes to a canary on a share of live traffic, watched by online evals, which can roll it back; otherwise it rolls out to everyone. Failures found in production become new test cases.
+%% caption: Every change passes the same gate, and every failure found in production becomes a new test case.
+flowchart TB
+  classDef control fill:#ede9fe,stroke:#7c3aed,color:#1f1147
+  classDef data fill:#fef3c7,stroke:#b45309,color:#3b2405
+
+  change(["A change: prompt,<br/>model or retrieval"])
+  offline["Offline evals<br/>code checks · judge · people"]
+  gate{{"Release gate:<br/>no slice regresses"}}:::control
+  canary["Canary,<br/>with online evals"]
+  live(["Full rollout"])
+  tests[("Test set")]:::data
+
+  change --> offline --> gate
+  gate -- "pass" --> canary --> live
+  gate -. "regression: fix it" .-> change
+  canary -. "roll back" .-> change
+  live -. "new failures" .-> tests
+  tests --> offline
